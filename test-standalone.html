@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Standalone Dashboard</title>
+</head>
+<body>
+  <h1>Testing Standalone Dashboard</h1>
+  <p>Open the browser console (F12) and check for errors.</p>
+  <p>Then open <code>dashboard-standalone.html</code> in the same way.</p>
+  <script>
+    // Test if ES modules work
+    console.log('Testing ES modules support...');
+    try {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.textContent = 'console.log("ES modules work!");';
+      document.body.appendChild(script);
+    } catch (e) {
+      console.error('ES modules might not work:', e);
+    }
+  </script>
+</body>
+</html>
+
