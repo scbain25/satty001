@@ -1,4 +1,10 @@
 {
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npx vite",
+    "build": "cd frontend && npx tsc && npx vite build",
+    "preview": "cd frontend && npx vite preview"
+  },
   "devDependencies": {
     "puppeteer": "^24.30.0"
   }
