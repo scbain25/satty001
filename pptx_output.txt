@@ -1,0 +1,898 @@
+﻿
+================================================================================
+SLIDE 1
+================================================================================
+AI in Manufacturing:
+October 2025
+AI Architecture Discussion
+
+================================================================================
+SLIDE 2
+================================================================================
+Key principles for the manufacturing AI architecture
+Multiple ways for designing & implementing AI in manufacturing ΓÇô Low code/ No code, Enterprise platforms (Raga AI, Karini AI, c3.ai, etc.) are few upcoming examples, and the landscape is evolving quickly
+Along with the right AI solutions, we will build foundational capabilities for both data & tech (IT/OT), e.g.: MES scheduling, enterprise data platform, etc. Some elements will be common with the broader business while others will be unique to manufacturing
+We have spoken about the solution for structured & unstructured data in the past ΓÇô in additional we will build a holistic framework for IT/ OT architecture design addressed Plant architecture, cloud & IOT platform, integration with Corporate IT & SAAS solutions
+As we get into implementation, we will follow the following principles
+Two streams: Build the foundation and drive value from AI use-cases in parallel
+Stay agile: Each use-case to be sliced to enable fast releases to the shopfloor (each sprint to be max 12-16 weeks); will enable us to stay in lockstep with evolving technology and update course of action where needed
+Modular vendor agnostic tech stack: that reports by exception, edge driven, open and lightweighted architecture
+Best of breed approach: Few anchor vendors; Microsoft / Azure and Enterprise ChatGPT for data and AI, S/4HANA and Werum MES for enterprise systems, and Kepware with MQTT brokers (EMQX or HiveMQ) for shopfloor connectivity
+Explore existing vendors before adding new: When ΓÇÿBuyingΓÇÖ explore existing vendors, when ΓÇÿBuildingΓÇÖ build a modular solution stack, with intuitive UX for the users
+Nick
+
+================================================================================
+SLIDE 3
+================================================================================
+Irrespectively if your organization is Industry 3.0 or Industry 4.0 enabled, your tech stack is around 5 layers
+overall_0_132327234823613252 columns_3_132340249405412229 4_1_132327234422169689 7_1_132327234422169689 44_1_132327238294051254 56_1_132327238875006579 60_1_132327238875445366 84_1_132327242040912808 88_1_132327242118929819 196_1_132327253360567897 200_1_132327253361226125 204_1_132327253361854438 208_1_132327253380855157 212_1_132327253433361496 216_1_132327253434020015 252_1_132327383507157394 256_1_132327383507845576 260_1_132327383508614407 17_1_132340249445752684 20_1_132340249445952154 28_1_132340249446151267 36_1_132340341068011192
+Manufacturers are aspiring or piloting cloud for AI and ML and GenAI
+ERP always exists in a manufacturing environment
+Majority of the clients are in paper based
+Majority of the manufacturing clients have it
+PLC and HIM always exists in a manufacturing environment
+IT and OT data; analyze, predict and learn on the enterprise
+Cloud
+Key highlights
+Architecture stack
+Levels
+Enterprise technology level (IT)
+Operational technology level (OT)
+ERP converts a sales order into a manufacturing plan; trx based; decision level from years to shifts; BOM per product, Revenue & Cost
+ERP ΓÇô Enterprise Resources Platform
+MES executes the manufacturing plan; scheduling; work order mgt, OEE, down time tracking; decision level seconds-real-time; event-driven
+MES ΓÇô Manufacturing Execution System
+Gives me centralized alarms and real time monitoring of all of my plan
+SCADA - Supervisory Control and Data Acquisition
+Edge ΓÇô PLC & HMI
+5
+4
+3
+2
+1
+PLC enable all automation to keep employees and machine safe; HMI controls the automation env & machines running uniformly
+Marita
+
+================================================================================
+SLIDE 4
+================================================================================
+From islands of automation to an integrated digital ecosystem
+Key drivers of change
+Emerging technologies (e.g. AR/VR, Digital twin, Robotics, cloud, etc.)
+Real-time reporting
+Digital Factory
+Machine Learning
+Edge driven / IIOT
+Report by exception (i.e.: pub / sub)
+Open architecture, lightweight on MQTT
+Secure by design, no outbound ports open
+Edge driven
+Trusted zones formed between layers to secure IT and OT systems
+Transition inefficiencies (P/R) during repeated transmissions up the Purdue Model layers
+Lack of scalability (server driven) due to point-to-point connections and specialized stakeholders
+Heavyweight on OPC since higher levels of the Purdue Model are not designed for handling large data amounts
+Marita
+
+================================================================================
+SLIDE 5
+================================================================================
+Case Studies
+Pharma Co recognized growing risks around data reliability and regulatory compliance due to fragmented operations across its quality control labs and production units
+This lack of integration led to increased chances of manual errors, inconsistent record-keeping, potential vulnerabilities during audits
+Problem Statement
+Solution
+Pharma Co launched a joint initiative across Quality, IT, and Engineering, aimed at establishing a secure digital layer that connects every instrument to central data systems
+They designed and deployed an Equipment Data Integration Framework with HiveMQ enabling consistent connectivity between instruments and core applications such as MES and LES
+Implemented a cloud-ready architecture to capture, validate, and store equipment data in near real time, with appropriate data-security safeguards.
+Embedded compliance-by-design features including time-stamped records, version control, and automated audit trails to meet GxP and FDA requirements
+Delivered centralized dashboards and traceability reports to simplify review and ensure full visibility of equipment performance and data flow
+A leading consumer goods company identified growing challenges around data reliability and process consistency due to non-standardized systems across its manufacturing plants
+This lack of standardization and varied data management practices led to disconnected workflows and inconsistent reporting
+Consumer Co launched an initiative to connect and harmonize all plant-level systems through a Unified Namespace (UNS)
+The UNS serves as a single, structured data layer that allows seamless exchange of information between machines, control systems, and enterprise applications; eliminating the silos that had developed across plants
+The company selected EMQX and Neuron as its core technology stack for enabling this connectivity
+EMQX, a high-performance MQTT broker, acts as the central communication backbone, streaming real-time data securely between devices and systems
+Neuron, an industrial connectivity gateway, provides protocol conversion and data normalization, ensuring that equipment from different vendors and generations can publish data into the UNS in a standardized format
+Marita
+
+================================================================================
+SLIDE 6
+================================================================================
+The full potential of Glenmark: A fully integrated business made up of digital factories
+Everything and Everyone is Plugged into the Network
+The layers of the business are integrated and operate based on data and information from all the other layers, in real-time
+Stakeholders know the current state of the business in real-time (e.g.: actual cost of each SKU produced)
+Stakeholders know the future state of the business in real-time (e.g.: expected bottleneck in the quality)
+ML/AI technologies collect and analyze data/information
+ML predicts future outcomes based on past patterns and current state
+AI recommends operational adjustments to improve future outcomes (e.g.: change the position of a given operator)
+Stakeholders execute (or not) the recommended operational adjustments
+Marita
+
+================================================================================
+SLIDE 7
+================================================================================
+This technical solution creates the link between plant elements and the edge, enhancing the current architecture instead of replacing it
+Enterprise Integration
+Edge
+Edge
+BMS
+Invent. level sensor
+SCADA
+Edge
+Quality Equipment
+ValueStream
+ProductionFunction
+MES
+MaintenanceFunction
+MMS
+QualityFunction
+QMS
+InventoryFunction
+WMS
+Enterprise Integration
+Historian
+BMS
+Invent. level sensor
+SCADA
+Edge
+Quality Equipment
+ValueStream
+ProductionFunction
+MES
+MaintenanceFunction
+MMS
+QualityFunction
+QMS
+InventoryFunction
+WMS
+Historian
+Back-end use cases (e.g. Machine Learning models) can only be deployed in the edge
+Back-end use cases (e.g. Machine Learning models) are centrally deployed in plant integration
+Plant Integration
+Marita
+
+================================================================================
+SLIDE 8
+================================================================================
+Material control system
+Once implemented, the enhanced architecture with Unified Namespace empowers roll-out of advanced digital use cases
+Immediate identification of anomalies in products or faulty production processes as they occur
+Swift response to correct the anomaly and inform responsible teams
+Fully automated process
+Example for a pharma company:
+Automated quality reading detects faulty viscosity in end product
+Feedback loop to material control system to adjust input materials
+Fluid router automatically notified to send faulty product to waste handling
+Signal sent to Quality and EBR teams
+Faulty product triggers immediate event delivery to message broker
+Message broker dispatches events to components that subscribed to the relevant topic, e.g., material control system, fluid router, quality & EBR teams
+Response happens in real-time, without human intervention
+What is it?
+How does it work?
+Mixer
+Staging area
+Fluid router
+Waste handling
+Bottling area
+Quality reading
+Quality team
+EBR team
+Waste disposal governance
+Root cause analysis
+Material flow
+Event flow
+Human action
+Production system element
+Process
+Team
+Message broker
+Product routing
+Recipe mgmt. model
+Marita
+
+================================================================================
+SLIDE 9
+================================================================================
+Over the past ~15 years, weΓÇÖve seen 3 generations of IT/OT integration platforms
+Software┬áto connect industrial assets and systems, analyze data, and build low-code applications
+Typically built on Java and deployed on Windows systems (on-premises or in virtual machine in cloud)
+Technical challenges include monolithic architecture, limited real-time processing, and database-reliant communication
+Often missing critical IT operations best practices such as monitoring, CI/CD, and infrastructure automation
+Selected vendors
+Description
+Cloud-hosted managed service to collect, store, organize and monitor data from industrial equipment
+Challenges with latency, real-time processing, and network reliability.
+Risk of vendor lock-in including a history of retiring key components (e.g., Azure IoT central)
+Relatively high-costs for data-intensive applications requiring frequent data transfer
+Limited usability for OT site personnel
+An event-driven microservice platform enabling seamless communication of IT and OT systems by integrating various data sources into a single point (data hub)
+Consistent and standardized data model
+Deployable in a hybrid setup with edge, site, and cloud instancesΓÇï
+Organizations maintain control over their data governance in their own infrastructure, mitigate lock-in risks, and minimize data transfer costs
+Marita
+
+================================================================================
+SLIDE 10
+================================================================================
+Several technology vendors have emerged providing an IT/ OT integration platform (ΓÇ£Unified NamespaceΓÇ¥)
+Proprietary UNS suites(all in one solutions, largely closed source systems)
+Build-your-Own UNS(open architecture based on best-of-breed building blocks)
+Managed Open-Source UNS
+(open, enterprise-grade,ΓÇ£best of both worldsΓÇ¥)
++ 	Enterprise-level mgmt./ orchestration
++ 	Benefits of Build-Your-Own UNS
++ 	Reduced OT vendor lock-in
+-	Relatively new players
++ 	Best-of-breed building blocks
++ 	Strong public documentation and community support
+- 	Difficult to set up, scale, maintain
++	Comprehensive Industrial DataOps 	solutions
++ 	Enterprise-level service and support
+- 	Strong vendor dependency in core 	IT/OT architecture (integration layer)
+Emerging field of play
+Marita
+
+================================================================================
+SLIDE 11
+================================================================================
+Key principles for AI agile delivery
+2 parallel workstreams: AI use-cases and Shop Floor connectivity
+Parallel implementation of one high impact use case across entire plant network
+Each module is deployed in stages, progressing with manufacturing-pathway complexity, data readiness, and resource couplingΓÇöeach stage delivering a discrete business outcome.
+Each use case will be compromised by distinct modules, to pressure-test BUY vs BUILD decisions
+Incremental delivery in sprints (up to 12-16 weeks)
+Nick
+
+================================================================================
+SLIDE 12
+================================================================================
+
+================================================================================
+SLIDE 13
+================================================================================
+Appendix ΓÇô Deep dive UNS
+
+================================================================================
+SLIDE 14
+================================================================================
+The level of your organizationΓÇÖs AI maturity is defined by how strong the organization is tailored to support AI use cases at scale
+Emerging capability
+Initiating AI exploration, with sporadic use cases and fragmented data management, facing challenges in scalability and integration
+Developing capability
+Building foundational AI capabilities and data governance, starting to break down silos, but still hindered by legacy systems and limited cross-functional collaboration
+Maturing capability
+Demonstrating increased AI adoption across functions with robust data infrastructure and governance, yet facing challenges in end-to-end lifecycle management of AI applications
+Leading capability
+Showcasing strategic AI integration with scalable, flexible infrastructure, widespread AI democratization, and a strong, collaborative data culture driving innovation and efficiency
+AI MATURITY
+KEY DRIVERS
+AI Maturity as a Strategic Imperative
+5
+Breadth of AI integration (cross-function/ BU)
+Scalable and Flexible Data Infrastructure
+Empowered Talent
+Ethical AI Governance
+Culture of Innovation
+Collaborative AI Ecosystem
+AI maturity is NOT merely about using advanced tech like Gen AI, i.e. immature organizations may use GenAI extensively but struggle with scalability and cohesion, unlike their mature counterparts
+
+================================================================================
+SLIDE 15
+================================================================================
+Core principles that help organizations succeed: strategic importance of comprehensive data management, ethical AI practices, and collaborative culture
+Unified Data Governance: Essential for effective AI implementation is a robust governance framework ensuring data accuracy, privacy, and security across all systems
+Modern Infrastructure and Skills Development: Emphasizing the modernization of data infrastructure and the development of workforce skills to fully leverage AI capabilities
+System Consolidation for Scalability: Integrating disparate data and AI systems into unified platforms is crucial for breaking down silos and enabling scalable AI initiatives
+Democratization of AI: Ensuring widespread access to AI tools and data across the organization, coupled with strong governance, to leverage AI's full potential
+Flexible and Ethical AI Development: Adopting flexible approaches to AI development, including both proprietary and open-source models, while ensuring ethical AI practices
+Strategic Utilization for Transformation: Leveraging AI strategically to transform business operations, enhance efficiency, and drive growth, even amidst economic uncertainties
+Innovation and Open Standards: Encouraging innovation through the adoption of open standards and data formats to foster choice and flexibility in data management tools
+Collaborative Data Culture: Promoting a culture of collaboration where analytics and machine learning capabilities are democratized, enhancing organizational agility and innovation
+
+================================================================================
+SLIDE 16
+================================================================================
+Executive summary
+In the digital pharma factory of the future, differentiating digital solutions require high-quality, compliant data ΓÇö available in real time and across diverse sources such as manufacturing systems, quality labs, and supply chain.
+The traditional architecture with hierarchical levels and point-to-point connections results in a spread of incompatible interfaces that make it hard to discover, access and analyze business data
+Several data challenges, such as aggregation and loss, firewall barriers, integration hurdles, transmission inefficiencies
+Several business challenges, such as lack of scalability, accrued technical debt, stifled innovation, data gaps
+An enhanced architecture is evolving out of the traditional architecture to address those gaps, driven by a set of core elements such as:
+Event-driven mechanism
+Unified Namespace
+Message broker (MQTT)
+IIoT platform
+Sparkplug B
+Once implemented, such an architecture empowers roll-out of AI use cases
+Enabling best practice data analytics reference architecture that address data & technology design considerations from shop floor to cloud
+We donΓÇÖt solve integration, we are becoming the trusted partner to deliver AI and Pharma 5.0 at scale
+An architecture migration typically comes in 3 phases: Assess & Design, Build & Scale, Run & Maintain
+
+================================================================================
+SLIDE 17
+================================================================================
+The Why: The traditional architecture refrains industrial companies from leveraging advanced digital use cases due to cumulated challenges
+Data aggregation and loss during repeated transmissions up the Purdue Model layers
+Firewall barriers at each level highly hinders access to data at device level
+Integration hurdles, as leveraging data from different components requires complex, multi-steps data flow across levels
+Transmission inefficiencies, since higher levels of the Purdue Model are not designed for handling large data amounts
+Lack of scalability due to point-to-point connections and specialized stakeholders
+Accrued technical debt due to numerous proprietary APIs accessible only by specific vendors
+Innovation stifled by limited access to data for all stakeholders
+Layer 1/0
+Layer 2
+Layer 3
+Network separation
+Network separation
+DMZ
+Trust zones formed between layers to secure IT and OT systems
+Data transmission is increasingly skipping layers, bypassing trust zones and exposing attack surfaces
+Traditional data protection scheme
+Layer 4
+Corporate
+External
+Network separation
+Firewall
+Firewall
+Network separation
+
+================================================================================
+SLIDE 18
+================================================================================
+The What: An enhanced architecture is evolving out of the traditional architecture to  enable real-time data across the company
+Integration of message broker with UNS into enterprise architecture
+An event-driven architecture with Unified Namespace provides clear technical advantagesΓÇª
+Loosely coupled
+Scalable
+Real-time responsive
+Flexible
+Resilient
+Lean resources
+Real-time data availability
+Simplified integration
+Improved agility
+Incremental development & scalability
+ΓÇª setting up IT/OT architecture with necessary capabilities for the Digital Factory
+HRM
+CRM
+SSM
+SRM
+PLM
+XXX
+Enterprise Integration
+XXX
+ERP
+Services
+Transformations
+Data
+Data
+Orchestration
+Relational
+Blob
+Time Series
+ΓÇª
+Streaming
+Data Bus
+Event Bus
+File Transfer
+Corporate
+Applications
+Storage
+Data Ingestion
+Applications
+Analytics
+Data
+Historian
+Edge
+Edge
+BMS
+Inven.LevelSensor
+SCADA
+XXX
+DCS
+XXX
+XXX
+PLC
+Edge
+Plant
+AreasL2
+SourceL1
+Site CentralL3
+Quality Equipment
+XXX
+XXX
+Sensor
+XXX
+XXX
+XXX
+XXX
+XXX
+Sensor
+XXX
+XXX
+Sensor
+XXX
+XXX
+Sensor
+ValueStream
+ProductionFunction
+MES
+MaintenanceFunction
+MMS
+QualityFunction
+QMS
+InventoryFunction
+WMS
+Reporting/ Dashboarding
+Execution
+Catalog
+Execution
+External Sources
+Cloud
+Plant Integration
+Message broker / Unified Namespace
+Events
+
+================================================================================
+SLIDE 19
+================================================================================
+The What: This technical solution creates the link between plant elements and the edge, enhancing the current architecture instead of replacing it
+Enterprise Integration
+Edge
+Edge
+BMS
+Invent. level sensor
+SCADA
+Edge
+Quality Equipment
+ValueStream
+ProductionFunction
+MES
+MaintenanceFunction
+MMS
+QualityFunction
+QMS
+InventoryFunction
+WMS
+Enterprise Integration
+Historian
+BMS
+Invent. level sensor
+SCADA
+Edge
+Quality Equipment
+ValueStream
+ProductionFunction
+MES
+MaintenanceFunction
+MMS
+QualityFunction
+QMS
+InventoryFunction
+WMS
+Historian
+Back-end use cases (e.g. Machine Learning models) can only be deployed in the edge
+Back-end use cases (e.g. Machine Learning models) are centrally deployed in plant integration
+Plant Integration
+
+================================================================================
+SLIDE 20
+================================================================================
+The What: The event-driven concept is an emerging data transmission mechanism that has enabled new integration patterns
+This system delivers events from event producer to event consumers
+Events are messages sent by a component, e.g., a sensor, a machine or a system
+Events are organized by event types, or topics:
+Consumers receive events only to the topics they subscribed to
+Different sources can publish to the same topic
+Producers and consumers are loosely coupled:
+Producers publish events regardless of the presence of a consumer
+Producers and consumers can be removed or added without altering the system
+Producers can also be consumers, and vice-versa
+Publish
+Publish
+Publish
+Subscribe
+Subscribe
+Subscribe
+
+================================================================================
+SLIDE 21
+================================================================================
+The What: A message broker is a software at the center of the architecture, routing events by topics to event consumers
+Message brokers use topic routing logic to send events to consumers
+Consumers receive only events from the topics they subscribed to
+Events are stored in queuing system  which subscribers pull up from, enabling asynchronous message delivery
+Upon event processing, consumer sends an acknowledgment notification to remove event from the queue
+Two message brokers are often considered for OT environments:
+MQTT: lightweight, standards-based, open-source, publish-subscribe messaging protocol
+Apache Kafka: an open-source distributed event streaming platform
+Advanced architectures combine both
+Event 4
+Event 1
+Event 3
+Topic routing
+Event 2
+Event 3
+Event 1
+Acknowledgment
+Acknowledgment
+Acknowledgment
+
+================================================================================
+SLIDE 22
+================================================================================
+The What: By unifying naming conventions across the company, the Unified Namespace provides a single, consistent view on OT data
+Unified Namespace applies following conversions on data:
+Common topic hierarchy convention across the company
+Data contextualization in a standardized framework
+The convention is typically based on ISA-95 Part 2 equipment model hierarchy:
+Enterprise
+Site
+Area
+Line
+Workcell
+Ensures identification of data source and common understanding of data, regardless of the publisher and consumer
+Event example
+Tag:
+9235A/temperature
+Value:
+125
+Event example
+Topic:
+Enterprise / site / area / line / workcell / topic
+Payload:
+Temperature_Celsius: 125
+Unified Namespace applied
+
+================================================================================
+SLIDE 23
+================================================================================
+The What: Sparkplub B is an open-source solution to implement an event-driven architecture with Unified Namespace, adapting it to legacy devices
+Sparkplug B is an open-source MQTT specification managed by Eclipse Foundation
+It implements several aspects of the architectures:
+Event-driven mechanism
+Message broker (incl. topic routing)
+Common topic hierarchy
+Sparkblug B reports by exception, i.e. data is published only when values change in the device
+Uses Google protocol buffer encoding to reduce network bandwidth consumption
+Event example
+Tag:
+9235A/temperature
+Event example
+Topic:
+Enterprise / site / area / line / workcell / topic
+Sparkplug application
+Sparkplug-aware broker
+
+[SPEAKER NOTES]: HighByte Input : 
+SparkPlug B is getting more difficult to deploy
+SparkPlug B was designed for small devices, mostly telemetry data ΓÇô light payload
+Unified Namespace is currently focused on the plant, but is more applicable and powerful at the cloud
+There are varying levels of UNs
+UnifiedNamespace Capital U and N
+It is plant
+
+================================================================================
+SLIDE 24
+================================================================================
+The What: Once implemented, the enhanced architecture with Unified Namespace empowers roll-out of advanced digital use cases (1/3)
+Air temperature and humidity level needs to be controlled in operating rooms for certain processes, e.g., for car painting operations
+Energy optimization through automated control of exchange wheels, boilers, humidifiers and other equipment
+Machine learning model linking air flow characteristics to actions of a set of appliances and energy consumption
+Once a month, model is fed with new data from sensors and re-learn from data to calculate new optimal configuration
+Data is sent once a month as event to the message broker, where they are contextualized and assigned to topics with the Unified Namespace
+Events are sent to the relevant elements who subscribed to the topic and are brought ready-to-use in the AI models
+Set of commands from the AI model is sent to broker who dispatches them
+Message broker
+Message broker gathers data from all sources, unifies data format and dispatches events
+SensorsL2
+Appliances operating data (power, timestamps) is sent to message broker
+CloudL5
+Simulation model generates coefficients for optimization model
+AI optimization model calculates energy-minimizing configuration
+PlantL3
+AppliancesL0
+Air flow characteristics data (temperature, humidity) is emitted by sensors
+Coefficients
+What is it?
+How does it work?
+
+================================================================================
+SLIDE 25
+================================================================================
+Material control system
+The What: Once implemented, the enhanced architecture with Unified Namespace empowers roll-out of advanced digital use cases (2/3)
+Immediate identification of anomalies in products or faulty production processes as they occur
+Swift response to correct the anomaly and inform responsible teams
+Fully automated process
+Example for a pharma company:
+Automated quality reading detects faulty viscosity in end product
+Feedback loop to material control system to adjust input materials
+Fluid router automatically notified to send faulty product to waste handling
+Signal sent to Quality and EBR teams
+Faulty product triggers immediate event delivery to message broker
+Message broker dispatches events to components that subscribed to the relevant topic, e.g., material control system, fluid router, quality & EBR teams
+Response happens in real-time, without human intervention
+What is it?
+How does it work?
+Mixer
+Staging area
+Fluid router
+Waste handling
+Bottling area
+Quality reading
+Quality team
+EBR team
+Waste disposal governance
+Root cause analysis
+Material flow
+Event flow
+Human action
+Production system element
+Process
+Team
+Message broker
+Product routing
+Recipe mgmt. model
+
+================================================================================
+SLIDE 26
+================================================================================
+The What: Once implemented, the enhanced architecture with Unified Namespace empowers roll-out of advanced digital use cases (3/3)
+Allocation of costs to products, services, or activities based on their consumption of resources
+More accurate understanding of costs associated with different activities
+More informed pricing decisions
+Multiple cost drivers are considered, reflecting the various activities involved in producing a product or providing a service
+Unlike traditional costing methods that use a single cost driver, usually volume
+What is it?
+How does it work?
+The message broker allows reversing the Purdue Model, creating a bridge between IT and OT layers (L1-L5)
+Unified Namespace enables automated processing of data from the camera
+Cost drivers are updated near real-time thanks to push of events from the camera directly to the plant system as soon as they happen
+
+================================================================================
+SLIDE 27
+================================================================================
+The How: Enabling this advanced architecture requires an approach that aligns to  business impact, deep technical knowhow and capability building considerations
+Operations/ business challenges
+Calculating expected RoI
+Identifying most relevant use cases to ensure quick financial impact
+Adapting business operations to get most value from use cases
+Technical challenges
+Lack of battle-proven large-scale deployments
+Parallel launch of databases and command/response mechanism required
+Difficult coordination across devices, including eventual consistency
+Variable latency performance
+Operating model challenges
+Building capabilities for advanced tools (real-time data pipelines, data models, message broker)
+Increased collaboration across IT and OT teams
+Difficult acceptance within organization
+
+================================================================================
+SLIDE 28
+================================================================================
+The How: We leverage our holistic ADT (Advanced Digital Technologies) approach to support organizations in the deployment of advanced digital architectures
+I. OPERATIONS
+II. TECHNOLOGY
+III. PEOPLE & OPERATING MODEL
+Value driven solutions enabling key end-to-end business processes
+Build a robust, scalable & economically reasonable architecture
+Leverage distinctive technologies (e.g., advanced analytics, AI, ML, RPA, IPA process mining technologies) and necessary integrations
+Deploy software tools used effectively by operations experts with little coding skills
+Build a technology partner network, with ΓÇ£co-innovationΓÇ¥ & business-building mindset
+Customer-centric IIoT platform architecture and goal-orientedplatform partnerships
+Adapt to a ROI / value capture mindset
+Identify process and IT /┬á Platform /┬áApplication gaps
+Synthesize the business model/ case
+Evaluate top-down use cases and┬áprioritize accordingly, integrated and┬áaligned with the target picture, including functional requirements
+Prioritize solutions and use cases by value and deployment speed
+Define the organizational structure in the target operating model
+Analyze the status quo and future capability┬áand skills requirements, ensuring full alignment with use case/ business requirements
+Develop a framework for platform development & management incl. external sourcing, governance, customer & partner management, use case evolution
+New structures, roles, skills, and capabilities
++
++
+
+================================================================================
+SLIDE 29
+================================================================================
+The How: ADTΓÇÖs reference architecture for the factory of the future incorporates the elements required for scalable, real-time, end-to-end architecture
+Services
+Cross Solution View
+Traditional View
+Implementation View
+Other domains ΓÇª (Ex. SAP)
+Industrial Platform
+Use Case
+Vendor implementation
+Vendor implementation
+Technology
+Vendor implementation
+Vendor implementation
+Technology
+HRM
+CRM
+SSM
+SRM
+PLM
+XXX
+Enterprise Integration
+XXX
+ERP
+Services
+Transformations
+Data
+Data
+Orchestration
+Relational
+Blob
+Time Series
+ΓÇª
+Streaming
+Data Bus
+Event Bus
+File Transfer
+Corporate
+Applications
+Storage
+Data Ingestion
+Applications
+Analytics
+Data
+Historian
+Edge
+Edge
+BMS
+Inven.LevelSensor
+SCADA
+XXX
+DCS
+XXX
+XXX
+PLC
+Edge
+Plant
+AreasL2
+SourceL1
+Site CentralL3
+Quality Equipment
+XXX
+XXX
+Sensor
+XXX
+XXX
+XXX
+XXX
+XXX
+Sensor
+XXX
+XXX
+Sensor
+XXX
+XXX
+Sensor
+ValueStream
+ProductionFunction
+MES
+MaintenanceFunction
+MMS
+QualityFunction
+QMS
+InventoryFunction
+WMS
+Reporting/ Dashboarding
+Execution
+Catalog
+Execution
+External Sources
+Cloud
+Plant Integration
+Message broker / Unified Namespace
+
+================================================================================
+SLIDE 30
+================================================================================
+The How: Exemplary view on advanced architecture based on best-in-class components in manufacturing process
+Source: United Manufacturing Hub
+ERP
+MES
+SCADA
+PLCs
+Sensors
+MQTT
+Data lake &
+Warehouse
+Analytics
+Application
+Enterprise Message Broker
+AI Inference
+Management Console Frontend
+Data Infrastructure (UNS)
+Device and Container Infrastructure
+Operating Systems and Container Engine
+FlatcarOs / RHEL with Helm + k3s
+Device & Container Infrastructure
+CCTV, Scales ΓÇª
+Data Infrastructure (UNS)
+Protocol
+Converter
+Batch ΓÇô Layer
+Stream Processor
+Batch views
+Processed data
+Raw & processed data
+Batch view(e.g. nightly)
+Raw data
+Processed data
+MQTT ΓÇô Kafka bridge
+Changed events
+Platform
+Companion
+Deploys
+configures
+updates
+monitor
+Fetches commands
+only http outward connection and end-to-end encrypted
+Writes
+status
+Fetches commands
+only http outward connection
+Writes
+status
+Bi-directional bridge
+Application
+Request
+Result
+DMZ
+Bi-directional bridge
+Management   Console Backend
+Application
+DMZ
+Serving layer
+APIs
+IIOT Database
+Change data capture
+Speed ΓÇô Layer
+Stream Processor
+L5
+L4
+L3
+L2
+L1
+
+================================================================================
+SLIDE 31
+================================================================================
+Phase I: Assess & Design
+Phase III: Build & Scale
+Phase IV: Run & Maintain
+overall_0_131873523443510804 columns_4_131873523443420565 4_0_131873563278609665 9_1_131873523443039571 10_1_131873523443169895 11_1_131873523443250109 12_1_131873523443320298 18_1_131873563227419377
+The How: An architecture migration typically comes in 3 phases
+I. OPERATIONS
+ |  |  | 
+ | Identify areas of value
+Generate a list of relevant use cases to estimate financial benefits
+Define benefit realisation plan
+Complete full business case based on detailed plans | Monitor improvement of operations through KPIs
+Update use case prioritisation based on matrix across value and technology dimensions | Track success of use cases enabled by new architecture
+Monitor system health and performance in production
+Provide support to users and solve operational issues
+ | Map existing architecture and planned developments
+Select service providers to consider
+Define high-level architecture strategy
+Define architecture roadmap and release strategy (incl. security)
+Assess best solution for migrating architecture
+Define detailed equipment-level migration plans | Establish, launch and manage architecture migration programme
+Build release 1
+Obtain security approvals for each release & application migration
+Implement Release 1 and build subsequent releases
+Link equipment to the new architecture
+Link back-end system to new architecture
+Decommission legacy systems | Manage software updates and patches to keep systems secure and up-to-date
+Plan for future technology upgrades and expansions
+ | Analyze current state operating model
+Define target state operating model incl. appropriate governance, talent strategy, effective steering systems | Re-design operative processes based on new architecture
+Set-up change management office & roll-out plan for large scale transformation | Provide ongoing training and development opportunities for team members.
+Foster a culture of continuous improvement
