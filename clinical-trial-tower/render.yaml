@@ -1,0 +1,21 @@
+# Render.com Blueprint - deploy this entire stack with one click
+# Visit: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: clinical-trial-tower-api
+    runtime: python
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+    healthCheckPath: /healthz
+    plan: free
+
+  - type: web
+    name: clinical-trial-tower-ui
+    runtime: node
+    buildCommand: "cd frontend && npm install && npm run build"
+    startCommand: "npx serve frontend/dist -s -l $PORT"
+    plan: free

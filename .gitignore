@@ -3,3 +3,6 @@ playwright-report/
 test-results/
 .cursor/
 ClinDev_Control_Tower.zip
+__pycache__/
+*.pyc
+.env
