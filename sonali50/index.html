@@ -19,6 +19,28 @@ body{
   font-family:'Lato',sans-serif;background:var(--dark);color:#fff;
   overflow-x:hidden;
 }
+body.locked{overflow:hidden}
+
+/* ---- ENTRANCE SPLASH ---- */
+.splash{
+  position:fixed;inset:0;z-index:9999;
+  background:radial-gradient(ellipse at 50% 40%,var(--dark3),var(--dark));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;cursor:pointer;
+  transition:opacity .8s ease,visibility .8s ease;
+}
+.splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash h2{
+  font-family:'Great Vibes',cursive;font-size:clamp(3rem,8vw,6rem);
+  color:var(--gold);line-height:1.2;margin-bottom:1rem;
+  text-shadow:0 0 40px rgba(212,165,116,0.25);
+}
+.splash .tap{
+  font-family:'Lato',sans-serif;font-size:.85rem;color:var(--gold-dim);
+  letter-spacing:.3em;text-transform:uppercase;
+  animation:pulse-splash 2s ease infinite;
+}
+@keyframes pulse-splash{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* ---- HERO ---- */
 .hero{
@@ -204,21 +226,12 @@ body{
   box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
 .music-btn:hover{background:rgba(212,165,116,0.15);transform:scale(1.08)}
-.music-btn.active{border-color:var(--gold-bright);color:var(--gold-bright)}
-.music-btn.active .note{animation:pulse 1s ease infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-.music-panel{
-  position:fixed;bottom:5rem;right:1.5rem;z-index:99;
-  border-radius:12px;overflow:hidden;
-  box-shadow:0 8px 30px rgba(0,0,0,0.5);
-  border:1px solid rgba(212,165,116,0.15);
-  opacity:0;transform:translateY(10px) scale(0.95);
-  pointer-events:none;
-  transition:all .3s cubic-bezier(.25,.46,.45,.94);
-}
-.music-panel.open{
-  opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+.music-btn.playing{border-color:var(--gold-bright);color:var(--gold-bright)}
+.music-btn.playing .note{animation:pulse-note 1s ease infinite}
+@keyframes pulse-note{0%,100%{opacity:1}50%{opacity:.4}}
+.yt-hidden{
+  position:fixed;bottom:-200px;left:-200px;width:1px;height:1px;
+  overflow:hidden;opacity:0;pointer-events:none;
 }
 
 /* ---- RESPONSIVE ---- */
@@ -236,12 +249,18 @@ body{
 
 <div class="particles" id="particles"></div>
 
-<!-- MUSIC PLAYER -->
-<button class="music-btn" id="musicBtn" title="Play music">
+<!-- ENTRANCE SPLASH -->
+<div class="splash" id="splash">
+  <h2>50 Moods of Sonali</h2>
+  <p class="tap">Click anywhere to enter</p>
+</div>
+
+<!-- MUSIC (hidden YouTube player + mute/unmute button) -->
+<button class="music-btn" id="musicBtn" title="Mute / Unmute music">
   <span class="note">&#9835;</span>
 </button>
-<div class="music-panel" id="musicPanel">
-  <iframe src="https://open.spotify.com/embed/track/254bXAqt3zP6P50BdQvEsq?theme=0" width="300" height="80" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px"></iframe>
+<div class="yt-hidden" id="ytWrap">
+  <div id="ytPlayer"></div>
 </div>
 
 <!-- HERO -->
@@ -444,13 +463,36 @@ const bdayObs=new IntersectionObserver(([e])=>{
 },{threshold:0.2});
 bdayObs.observe(document.getElementById('birthdayMsg'));
 
-/* Music toggle */
+/* Splash + YouTube autoplay */
+document.body.classList.add('locked');
+let player=null;let playing=false;
 const musicBtn=document.getElementById('musicBtn');
-const musicPanel=document.getElementById('musicPanel');
+
+function onYouTubeIframeAPIReady(){
+  player=new YT.Player('ytPlayer',{
+    videoId:'YF1R0hc5Q2I',
+    playerVars:{autoplay:0,loop:1,playlist:'YF1R0hc5Q2I',controls:0},
+    events:{
+      onReady:function(){},
+      onStateChange:function(e){
+        if(e.data===YT.PlayerState.PLAYING){playing=true;musicBtn.classList.add('playing')}
+        if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED){playing=false;musicBtn.classList.remove('playing')}
+      }
+    }
+  });
+}
+
+document.getElementById('splash').addEventListener('click',function(){
+  this.classList.add('hidden');
+  document.body.classList.remove('locked');
+  if(player&&player.playVideo){player.playVideo()}
+});
+
 musicBtn.addEventListener('click',()=>{
-  const open=musicPanel.classList.toggle('open');
-  musicBtn.classList.toggle('active',open);
+  if(!player)return;
+  if(playing){player.pauseVideo()}else{player.playVideo()}
 });
 </script>
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
