@@ -193,6 +193,34 @@ body{
   100%{opacity:0;transform:translateY(-20vh) scale(1)}
 }
 
+/* ---- MUSIC BUTTON ---- */
+.music-btn{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;
+  width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);
+  background:rgba(12,10,9,0.85);backdrop-filter:blur(10px);
+  color:var(--gold);font-size:1.3rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s ease;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.music-btn:hover{background:rgba(212,165,116,0.15);transform:scale(1.08)}
+.music-btn.active{border-color:var(--gold-bright);color:var(--gold-bright)}
+.music-btn.active .note{animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.music-panel{
+  position:fixed;bottom:5rem;right:1.5rem;z-index:99;
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  border:1px solid rgba(212,165,116,0.15);
+  opacity:0;transform:translateY(10px) scale(0.95);
+  pointer-events:none;
+  transition:all .3s cubic-bezier(.25,.46,.45,.94);
+}
+.music-panel.open{
+  opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+}
+
 /* ---- RESPONSIVE ---- */
 @media(max-width:900px){
   .gallery-grid{columns:2;column-gap:1rem}
@@ -207,6 +235,14 @@ body{
 <body>
 
 <div class="particles" id="particles"></div>
+
+<!-- MUSIC PLAYER -->
+<button class="music-btn" id="musicBtn" title="Play music">
+  <span class="note">&#9835;</span>
+</button>
+<div class="music-panel" id="musicPanel">
+  <iframe src="https://open.spotify.com/embed/track/254bXAqt3zP6P50BdQvEsq?theme=0" width="300" height="80" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px"></iframe>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -407,6 +443,14 @@ const bdayObs=new IntersectionObserver(([e])=>{
   if(e.isIntersecting){e.target.classList.add('visible');bdayObs.unobserve(e.target)}
 },{threshold:0.2});
 bdayObs.observe(document.getElementById('birthdayMsg'));
+
+/* Music toggle */
+const musicBtn=document.getElementById('musicBtn');
+const musicPanel=document.getElementById('musicPanel');
+musicBtn.addEventListener('click',()=>{
+  const open=musicPanel.classList.toggle('open');
+  musicBtn.classList.toggle('active',open);
+});
 </script>
 </body>
 </html>
