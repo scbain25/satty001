@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priority ROI Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0f14;
+    --surface: #141820;
+    --surface2: #1c2230;
+    --border: #252d3d;
+    --accent: #f0c040;
+    --accent2: #3de8a0;
+    --accent3: #5b8fff;
+    --danger: #ff5f5f;
+    --text: #e8edf5;
+    --muted: #7a8499;
+    --rank1: #3de8a0;
+    --rank2: #5b8fff;
+    --rank3: #f0c040;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .title-block h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .title-block h1 span { color: var(--accent); }
+
+  .title-block p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .budget-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .budget-pill strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* Controls Panel */
+  .controls {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .controls h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .weight-group { margin-bottom: 24px; }
+
+  .weight-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .weight-label span {
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .weight-label .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .slider-payback { background: linear-gradient(to right, var(--accent2) 0%, var(--accent2) var(--pct, 50%), var(--border) var(--pct, 50%)); }
+  .slider-customer { background: linear-gradient(to right, var(--accent3) 0%, var(--accent3) var(--pct, 50%), var(--border) var(--pct, 50%)); }
+  .slider-employee { background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct, 50%), var(--border) var(--pct, 50%)); }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .weight-total {
+    margin-top: 24px;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .weight-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+
+  .weight-bar-container {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    display: flex;
+    overflow: hidden;
+    gap: 2px;
+  }
+
+  .weight-bar-seg {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.2s ease;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .toggle-group { margin-bottom: 16px; }
+
+  .toggle-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .toggle-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .toggle-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .toggle-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .payback-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .payback-filter label {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .payback-filter input[type=range] {
+    height: 3px;
+  }
+
+  /* Results Panel */
+  .results { }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .results-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .stat-chip strong { color: var(--text); }
+
+  .priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .priority-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .priority-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    transition: background 0.3s;
+  }
+
+  .priority-card.rank-1::before { background: var(--rank1); }
+  .priority-card.rank-2::before { background: var(--rank2); }
+  .priority-card.rank-3::before { background: var(--rank3); }
+  .priority-card.rank-other::before { background: var(--border); }
+  .priority-card.dimmed { opacity: 0.3; }
+
+  .priority-card:hover {
+    border-color: rgba(255,255,255,0.12);
+    background: var(--surface2);
+  }
+
+  .rank-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .rank-1 .rank-badge { background: rgba(61,232,160,0.15); color: var(--rank1); border: 1.5px solid var(--rank1); }
+  .rank-2 .rank-badge { background: rgba(91,143,255,0.15); color: var(--rank2); border: 1.5px solid var(--rank2); }
+  .rank-3 .rank-badge { background: rgba(240,192,64,0.15); color: var(--rank3); border: 1.5px solid var(--rank3); }
+  .rank-other .rank-badge { background: var(--surface2); color: var(--muted); border: 1.5px solid var(--border); }
+
+  .card-info { min-width: 0; }
+
+  .card-letter {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 3px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 14px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .meta-item strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .card-scores {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .score-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .score-bar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+    width: 80px;
+  }
+
+  .score-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .score-bar-label { font-size: 9px; color: var(--muted); white-space: nowrap; }
+
+  .score-bar-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .fill-payback { background: var(--accent2); }
+  .fill-customer { background: var(--accent3); }
+  .fill-employee { background: var(--accent); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .controls { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1>Priority <span>ROI</span> Explorer</h1>
+    <p>ADJUST WEIGHTS → LIVE GROUP RANKING</p>
+  </div>
+  <div class="budget-pill">
+    Total Investment (all 12)
+    <strong id="total-invest">$2.3M</strong>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- Controls -->
+  <div class="controls">
+    <h2>Scoring Weights</h2>
+
+    <div class="weight-group">
+      <div class="weight-label">
+        <span>⚡ Payback Speed</span>
+        <span class="val" id="val-payback">50%</span>
+      </div>
+      <input type="range" id="slider-payback" class="slider-payback" min="0" max="100" value="50">
+    </div>
+
+    <div class="weight-group">
+      <div class="weight-label">
+        <span>👥 Customer Impact</span>
+        <span class="val" id="val-customer">25%</span>
+      </div>
+      <input type="range" id="slider-customer" class="slider-customer" min="0" max="100" value="25">
+    </div>
+
+    <div class="weight-group">
+      <div class="weight-label">
+        <span>🏢 Employee Impact</span>
+        <span class="val" id="val-employee">25%</span>
+      </div>
+      <input type="range" id="slider-employee" class="slider-employee" min="0" max="100" value="25">
+    </div>
+
+    <div class="weight-total">
+      <div class="weight-total-row">
+        <span>Weight distribution</span>
+        <span id="weight-sum-label">100%</span>
+      </div>
+      <div class="weight-bar-container">
+        <div class="weight-bar-seg fill-payback" id="bar-payback" style="width:50%"></div>
+        <div class="weight-bar-seg fill-customer" id="bar-customer" style="width:25%"></div>
+        <div class="weight-bar-seg fill-employee" id="bar-employee" style="width:25%"></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="toggle-group">
+      <span class="toggle-label">MAX PAYBACK MONTHS</span>
+      <div class="toggle-row" id="payback-btns">
+        <button class="toggle-btn" data-months="3">≤ 3</button>
+        <button class="toggle-btn" data-months="6">≤ 6</button>
+        <button class="toggle-btn" data-months="12">≤ 12</button>
+        <button class="toggle-btn active" data-months="999">All</button>
+      </div>
+    </div>
+
+    <div class="toggle-group">
+      <span class="toggle-label">MAX INVESTMENT</span>
+      <div class="toggle-row" id="invest-btns">
+        <button class="toggle-btn" data-invest="100000">$100K</button>
+        <button class="toggle-btn" data-invest="250000">$250K</button>
+        <button class="toggle-btn" data-invest="500000">$500K</button>
+        <button class="toggle-btn active" data-invest="9999999">All</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Payback</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>Customer</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Employee</div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results">
+    <div class="results-header">
+      <h2>Rankings</h2>
+      <div class="stats-row">
+        <div class="stat-chip">Visible: <strong id="stat-visible">12</strong></div>
+        <div class="stat-chip">Invest: <strong id="stat-invest">$2.3M</strong></div>
+        <div class="stat-chip">Avg Payback: <strong id="stat-payback">—</strong></div>
+      </div>
+    </div>
+    <div class="priority-list" id="priority-list"></div>
+  </div>
+</div>
+
+<script>
+const ITEMS = [
+  { id:'A', title:'Strengthen prioritization & governance and implement WIP discipline', value:1188000, invest:97040, paybackMonths:1.0, paybackScore:5, customerScore:3, employeeScore:4 },
+  { id:'B', title:'Address foundational technology and documentation constraints', value:1017547, invest:505000, paybackMonths:6.0, paybackScore:3, customerScore:2, employeeScore:4 },
+  { id:'C', title:'Build automated testing into the development process', value:609000, invest:272417, paybackMonths:5.4, paybackScore:3, customerScore:4, employeeScore:3 },
+  { id:'D', title:'Automate release and deployment process', value:252233, invest:330820, paybackMonths:15.7, paybackScore:1, customerScore:4, employeeScore:3 },
+  { id:'E', title:'Stabilize and standardize non-production environments', value:667275, invest:168333, paybackMonths:3.0, paybackScore:3, customerScore:2, employeeScore:4 },
+  { id:'F', title:'Increase observability and improve incident management', value:229425, invest:126250, paybackMonths:6.6, paybackScore:2, customerScore:4, employeeScore:3 },
+  { id:'G', title:'Improve PM efficiency and reduce execution burden', value:152625, invest:26000, paybackMonths:2.0, paybackScore:5, customerScore:2, employeeScore:5 },
+  { id:'H', title:'Improve requirements quality upstream of sprint', value:504588, invest:235133, paybackMonths:5.6, paybackScore:3, customerScore:4, employeeScore:4 },
+  { id:'I', title:'Clarify quality ownership across Dev, QA, & Product', value:1008000, invest:82640, paybackMonths:1.0, paybackScore:5, customerScore:3, employeeScore:5 },
+  { id:'J', title:'Strengthen cross-team dependency planning and coordination', value:282600, invest:49520, paybackMonths:2.1, paybackScore:5, customerScore:3, employeeScore:4 },
+  { id:'K', title:'Deploy agentic code generation for feature development', value:621312, invest:213193, paybackMonths:4.1, paybackScore:3, customerScore:3, employeeScore:4 },
+  { id:'L', title:'Enable autonomous quality & ops agents', value:241875, invest:197693, paybackMonths:9.8, paybackScore:2, customerScore:4, employeeScore:3 },
+];
+
+let wPayback = 50, wCustomer = 25, wEmployee = 25;
+let maxMonths = 999, maxInvest = 9999999;
+
+function calcScore(item, wP, wC, wE) {
+  const total = wP + wC + wE || 1;
+  return (item.paybackScore * wP + item.customerScore * wC + item.employeeScore * wE) / total;
+}
+
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + n;
+}
+
+function render() {
+  const scored = ITEMS.map(item => ({
+    ...item,
+    score: calcScore(item, wPayback, wCustomer, wEmployee),
+    visible: item.paybackMonths <= maxMonths && item.invest <= maxInvest
+  }));
+
+  const visible = scored.filter(i => i.visible);
+  const sorted = [...scored].sort((a, b) => {
+    if (a.visible && !b.visible) return -1;
+    if (!a.visible && b.visible) return 1;
+    return b.score - a.score;
+  });
+
+  // Stats
+  document.getElementById('stat-visible').textContent = visible.length;
+  const totalI = visible.reduce((s, i) => s + i.invest, 0);
+  document.getElementById('stat-invest').textContent = fmt(totalI);
+  const avgP = visible.length ? (visible.reduce((s,i) => s + i.paybackMonths, 0) / visible.length).toFixed(1) : '—';
+  document.getElementById('stat-payback').textContent = avgP + ' mo';
+
+  const list = document.getElementById('priority-list');
+  list.innerHTML = '';
+  let visibleRank = 0;
+
+  sorted.forEach((item) => {
+    if (item.visible) visibleRank++;
+    const rank = item.visible ? visibleRank : null;
+    const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+
+    const card = document.createElement('div');
+    card.className = `priority-card ${rankClass} ${item.visible ? '' : 'dimmed'}`;
+
+    const pBar = Math.round(item.paybackScore / 5 * 100);
+    const cBar = Math.round(item.customerScore / 5 * 100);
+    const eBar = Math.round(item.employeeScore / 5 * 100);
+
+    card.innerHTML = `
+      <div class="rank-badge">${item.visible ? rank : '—'}</div>
+      <div class="card-info">
+        <div class="card-letter">PRIORITY ${item.id}</div>
+        <div class="card-title">${item.title}</div>
+        <div class="card-meta">
+          <div class="meta-item">Value <strong>${fmt(item.value)}</strong></div>
+          <div class="meta-item">Invest <strong>${fmt(item.invest)}</strong></div>
+          <div class="meta-item">Payback <strong>${item.paybackMonths} mo</strong></div>
+        </div>
+      </div>
+      <div class="card-scores">
+        <div class="score-big">${item.score.toFixed(1)}</div>
+        <div class="score-bar-group">
+          <div class="score-bar-row">
+            <span class="score-bar-label">PAY</span>
+            <div class="score-bar-track"><div class="score-bar-fill fill-payback" style="width:${pBar}%"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <span class="score-bar-label">CUS</span>
+            <div class="score-bar-track"><div class="score-bar-fill fill-customer" style="width:${cBar}%"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <span class="score-bar-label">EMP</span>
+            <div class="score-bar-track"><div class="score-bar-fill fill-employee" style="width:${eBar}%"></div></div>
+          </div>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function updateSlider(slider, cls) {
+  const pct = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+  slider.style.setProperty('--pct', pct + '%');
+  slider.className = cls;
+}
+
+const sliders = {
+  payback: document.getElementById('slider-payback'),
+  customer: document.getElementById('slider-customer'),
+  employee: document.getElementById('slider-employee'),
+};
+
+function updateWeights() {
+  wPayback = +sliders.payback.value;
+  wCustomer = +sliders.customer.value;
+  wEmployee = +sliders.employee.value;
+  const total = wPayback + wCustomer + wEmployee || 1;
+
+  document.getElementById('val-payback').textContent = Math.round(wPayback/total*100) + '%';
+  document.getElementById('val-customer').textContent = Math.round(wCustomer/total*100) + '%';
+  document.getElementById('val-employee').textContent = Math.round(wEmployee/total*100) + '%';
+
+  document.getElementById('bar-payback').style.width = (wPayback/total*100) + '%';
+  document.getElementById('bar-customer').style.width = (wCustomer/total*100) + '%';
+  document.getElementById('bar-employee').style.width = (wEmployee/total*100) + '%';
+
+  updateSlider(sliders.payback, 'slider-payback');
+  updateSlider(sliders.customer, 'slider-customer');
+  updateSlider(sliders.employee, 'slider-employee');
+
+  render();
+}
+
+sliders.payback.addEventListener('input', updateWeights);
+sliders.customer.addEventListener('input', updateWeights);
+sliders.employee.addEventListener('input', updateWeights);
+
+document.getElementById('payback-btns').addEventListener('click', e => {
+  if (!e.target.dataset.months) return;
+  maxMonths = +e.target.dataset.months;
+  document.querySelectorAll('#payback-btns .toggle-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  render();
+});
+
+document.getElementById('invest-btns').addEventListener('click', e => {
+  if (!e.target.dataset.invest) return;
+  maxInvest = +e.target.dataset.invest;
+  document.querySelectorAll('#invest-btns .toggle-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  render();
+});
+
+// Total invest in header
+const totalAll = ITEMS.reduce((s,i) => s + i.invest, 0);
+document.getElementById('total-invest').textContent = fmt(totalAll);
+
+updateWeights();
+</script>
+</body>
+</html>
