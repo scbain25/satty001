@@ -8,16 +8,16 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2d3a;
-      --text: #e4e4e7;
-      --muted: #9ca3af;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.15);
-      --academic: #10b981;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --border: #e2e5e9;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --accent: #4f46e5;
+      --accent-glow: rgba(79, 70, 229, 0.08);
+      --academic: #059669;
       --reddit: #ff4500;
-      --youtube: #ff0000;
+      --youtube: #dc2626;
       --substack: #ff6719;
       --twitter: #1d9bf0;
     }
@@ -41,7 +41,7 @@
     h1 {
       font-size: 1.8rem;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -86,7 +86,7 @@
       color: inherit; display: block;
     }
     .card:hover {
-      border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+      border-color: var(--accent); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       transform: translateY(-1px);
     }
 
@@ -130,6 +130,25 @@
     .source-tag.article { background: rgba(255,103,25,0.15); color: var(--substack); }
 
     .empty-state { text-align: center; padding: 4rem 0; color: var(--muted); }
+
+    /* Tag Cloud */
+    .tag-cloud {
+      max-width: 900px; margin: 0 auto; padding: 0.75rem 2rem 1rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      justify-content: center; align-items: center;
+    }
+    .tag-cloud-tag {
+      display: inline-block; padding: 0.3rem 0.75rem; border-radius: 20px;
+      font-weight: 500; cursor: default; transition: all 0.25s ease;
+      border: 1px solid var(--border); background: var(--surface); line-height: 1.4;
+    }
+    .tag-cloud-tag:hover {
+      transform: scale(1.1); border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15);
+    }
+    .tag-cloud-tag.size-lg { font-size: 1rem; font-weight: 600; color: #4f46e5; }
+    .tag-cloud-tag.size-md { font-size: 0.85rem; color: #7c3aed; }
+    .tag-cloud-tag.size-sm { font-size: 0.75rem; color: var(--muted); }
 
     .progress-bar {
       max-width: 900px; margin: 0 auto; padding: 0 2rem;
@@ -176,7 +195,10 @@
     <button class="filter-btn" data-type="academic">Academic</button>
     <button class="filter-btn" data-type="article">Articles</button>
     <button class="filter-btn" data-type="video">Videos</button>
+    <button class="filter-btn" data-type="tweet">Tweets</button>
   </nav>
+
+  <div class="tag-cloud" id="tag-cloud"></div>
 
   <div class="progress-bar" id="progress" style="display:none">
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
@@ -188,10 +210,35 @@
   </main>
 
   <footer>
-    <p>Sources: ACR, Annals of Rheumatic Diseases, Nature Immunology, Reddit, Substack, YouTube</p>
+    <p>Sources: ACR, Annals of Rheumatic Diseases, Nature Immunology, Reddit, Substack, YouTube, X/Twitter</p>
   </footer>
 
   <script>
+    // --- Tag Cloud ---
+    const TAG_CLOUD_WORDS = [
+      { text: 'Immunology', size: 'lg' }, { text: 'Rheumatology', size: 'lg' },
+      { text: 'Autoimmune', size: 'lg' }, { text: 'T Cell', size: 'md' },
+      { text: 'B Cell', size: 'md' }, { text: 'Cytokine', size: 'md' },
+      { text: 'Lupus', size: 'md' }, { text: 'RA', size: 'md' },
+      { text: 'TNF', size: 'sm' }, { text: 'Interferon', size: 'sm' },
+      { text: 'IL-6', size: 'sm' }, { text: 'JAK Inhibitor', size: 'md' },
+      { text: 'Biologic', size: 'md' }, { text: 'DMARD', size: 'sm' },
+      { text: 'Vasculitis', size: 'sm' }, { text: 'Sjogren', size: 'sm' },
+      { text: 'Psoriatic Arthritis', size: 'md' }, { text: 'Inflammation', size: 'lg' },
+      { text: 'Complement', size: 'sm' }, { text: 'Antibody', size: 'md' },
+      { text: 'CAR-T', size: 'sm' }, { text: 'Immunotherapy', size: 'md' },
+      { text: 'Methotrexate', size: 'sm' }, { text: 'Rituximab', size: 'sm' },
+      { text: 'Scleroderma', size: 'sm' }, { text: 'Gout', size: 'sm' },
+    ];
+
+    (function renderTagCloud() {
+      const cloud = document.getElementById('tag-cloud');
+      const shuffled = [...TAG_CLOUD_WORDS].sort(() => Math.random() - 0.5);
+      cloud.innerHTML = shuffled.map(tag =>
+        `<span class="tag-cloud-tag size-${tag.size}">${tag.text}</span>`
+      ).join('');
+    })();
+
     // --- Feed Configuration ---
     const FEEDS = [
       { url: 'https://www.reddit.com/r/rheumatology/.rss', source: 'r/rheumatology', sourceType: 'article', quality: 0.6, icon: 'reddit' },
@@ -204,6 +251,9 @@
       { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC0QHWhjbe5fGJEPz3sVb6nw', source: 'MedCram', sourceType: 'video', quality: 0.7, icon: 'youtube' },
       { url: 'https://yourlocalepidemiologist.substack.com/feed', source: 'Your Local Epidemiologist', sourceType: 'article', quality: 0.8, icon: 'substack' },
       { url: 'https://groundtruths.substack.com/feed', source: 'Ground Truths (Eric Topol)', sourceType: 'article', quality: 0.9, icon: 'substack' },
+      { url: 'https://rsshub.app/twitter/user/ACRheum', source: 'X (@ACRheum)', sourceType: 'tweet', quality: 0.8, icon: 'twitter' },
+      { url: 'https://rsshub.app/twitter/user/RheumNow', source: 'X (@RheumNow)', sourceType: 'tweet', quality: 0.8, icon: 'twitter' },
+      { url: 'https://rsshub.app/twitter/user/NatureImmunol', source: 'X (@NatureImmunol)', sourceType: 'tweet', quality: 0.9, icon: 'twitter' },
     ];
 
     const KEYWORDS = [

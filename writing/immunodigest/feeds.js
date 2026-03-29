@@ -86,25 +86,28 @@ const FEEDS = [
     icon: 'academic'
   },
 
-  // Twitter/X — Most public Nitter/RSSHub instances are down.
-  // To enable Twitter feeds:
-  // 1. Self-host RSSHub (https://docs.rsshub.app/) and update URLs below
-  // 2. Or use Twitter API v2 with bearer token
-  // Uncomment and update when you have a working RSS bridge:
-  // {
-  //   url: 'https://your-rsshub-instance/twitter/user/ACRheum',
-  //   source: 'Twitter/X (ACR)',
-  //   sourceType: 'tweet',
-  //   quality: 0.8,
-  //   icon: 'twitter'
-  // },
-  // {
-  //   url: 'https://your-rsshub-instance/twitter/user/RheumNow',
-  //   source: 'Twitter/X (RheumNow)',
-  //   sourceType: 'tweet',
-  //   quality: 0.8,
-  //   icon: 'twitter'
-  // }
+  // Twitter/X — via RSSHub public instance
+  {
+    url: 'https://rsshub.app/twitter/user/ACRheum',
+    source: 'X (@ACRheum)',
+    sourceType: 'tweet',
+    quality: 0.8,
+    icon: 'twitter'
+  },
+  {
+    url: 'https://rsshub.app/twitter/user/RheumNow',
+    source: 'X (@RheumNow)',
+    sourceType: 'tweet',
+    quality: 0.8,
+    icon: 'twitter'
+  },
+  {
+    url: 'https://rsshub.app/twitter/user/NatureImmunol',
+    source: 'X (@NatureImmunol)',
+    sourceType: 'tweet',
+    quality: 0.9,
+    icon: 'twitter'
+  }
 ];
 
 const KEYWORDS = [

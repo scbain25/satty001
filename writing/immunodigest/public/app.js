@@ -1,3 +1,30 @@
+// Tag Cloud
+const TAG_CLOUD_WORDS = [
+  { text: 'Immunology', size: 'lg' }, { text: 'Rheumatology', size: 'lg' },
+  { text: 'Autoimmune', size: 'lg' }, { text: 'T Cell', size: 'md' },
+  { text: 'B Cell', size: 'md' }, { text: 'Cytokine', size: 'md' },
+  { text: 'Lupus', size: 'md' }, { text: 'RA', size: 'md' },
+  { text: 'TNF', size: 'sm' }, { text: 'Interferon', size: 'sm' },
+  { text: 'IL-6', size: 'sm' }, { text: 'JAK Inhibitor', size: 'md' },
+  { text: 'Biologic', size: 'md' }, { text: 'DMARD', size: 'sm' },
+  { text: 'Vasculitis', size: 'sm' }, { text: 'Sjogren', size: 'sm' },
+  { text: 'Psoriatic Arthritis', size: 'md' }, { text: 'Inflammation', size: 'lg' },
+  { text: 'Complement', size: 'sm' }, { text: 'Antibody', size: 'md' },
+  { text: 'CAR-T', size: 'sm' }, { text: 'Immunotherapy', size: 'md' },
+  { text: 'Methotrexate', size: 'sm' }, { text: 'Rituximab', size: 'sm' },
+  { text: 'Scleroderma', size: 'sm' }, { text: 'Gout', size: 'sm' },
+];
+
+function renderTagCloud() {
+  const cloud = document.getElementById('tag-cloud');
+  const shuffled = [...TAG_CLOUD_WORDS].sort(() => Math.random() - 0.5);
+  cloud.innerHTML = shuffled.map(tag =>
+    `<span class="tag-cloud-tag size-${tag.size}">${tag.text}</span>`
+  ).join('');
+}
+
+renderTagCloud();
+
 const feed = document.getElementById('feed');
 const filterBtns = document.querySelectorAll('.filter-btn');
 const refreshBtn = document.getElementById('refresh-btn');

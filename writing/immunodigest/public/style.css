@@ -1,16 +1,16 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --border: #2a2d3a;
-  --text: #e4e4e7;
-  --muted: #9ca3af;
-  --accent: #6366f1;
-  --accent-glow: rgba(99, 102, 241, 0.15);
-  --academic: #10b981;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --border: #e2e5e9;
+  --text: #1a1a2e;
+  --muted: #6b7280;
+  --accent: #4f46e5;
+  --accent-glow: rgba(79, 70, 229, 0.08);
+  --academic: #059669;
   --reddit: #ff4500;
-  --youtube: #ff0000;
+  --youtube: #dc2626;
   --substack: #ff6719;
   --twitter: #1d9bf0;
 }
@@ -34,7 +34,7 @@ header {
 h1 {
   font-size: 1.8rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -139,11 +139,12 @@ h1 {
   text-decoration: none;
   color: inherit;
   display: block;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .card:hover {
   border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
@@ -236,6 +237,62 @@ h1 {
   text-align: center;
   padding: 4rem 0;
   color: var(--muted);
+}
+
+/* Tag Cloud */
+.tag-cloud {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.75rem 2rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.tag-cloud-tag {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: default;
+  transition: all 0.25s ease;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  line-height: 1.4;
+}
+
+.tag-cloud-tag:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15);
+}
+
+.tag-cloud-tag.size-lg { font-size: 1rem; font-weight: 600; color: #4f46e5; }
+.tag-cloud-tag.size-md { font-size: 0.85rem; color: #7c3aed; }
+.tag-cloud-tag.size-sm { font-size: 0.75rem; color: var(--muted); }
+
+.tag-cloud-toggle {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.tag-cloud-toggle button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.tag-cloud-toggle button:hover {
+  opacity: 1;
 }
 
 footer {
