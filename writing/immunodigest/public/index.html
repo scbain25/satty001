@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImmunoDigest — Daily Immunology & Rheumatology Curator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>ImmunoDigest</h1>
+      <p class="subtitle">Top 10 daily picks in Immunology & Rheumatology</p>
+    </div>
+    <div class="header-meta">
+      <span id="last-updated"></span>
+      <button id="refresh-btn" title="Refresh feeds">&#x21bb;</button>
+    </div>
+  </header>
+
+  <nav class="filters">
+    <button class="filter-btn active" data-type="all">All</button>
+    <button class="filter-btn" data-type="academic">Academic</button>
+    <button class="filter-btn" data-type="article">Articles</button>
+    <button class="filter-btn" data-type="video">Videos</button>
+    <button class="filter-btn" data-type="tweet">Tweets</button>
+  </nav>
+
+  <main id="feed" class="feed">
+    <div class="loading">Loading curated content...</div>
+  </main>
+
+  <footer>
+    <p>Sources: ACR, Annals of Rheumatic Diseases, Journal of Immunology, Reddit, Substack, YouTube, Twitter/X</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
