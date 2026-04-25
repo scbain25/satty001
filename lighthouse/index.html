@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lighthouse | Clinical Trial Control Tower Prototype</title>
+  <style>
+    :root {
+      --bg: #070b16;
+      --panel: rgba(15, 24, 43, 0.82);
+      --panel-strong: #111c33;
+      --line: rgba(137, 171, 255, 0.26);
+      --text: #ebf2ff;
+      --muted: #98acd7;
+      --accent: #51d2ff;
+      --accent-2: #9c7dff;
+      --good: #4ce6a7;
+      --warn: #ffd166;
+      --bad: #ff6f91;
+      --chip: rgba(145, 177, 255, 0.2);
+      --shadow: 0 12px 28px rgba(2, 8, 20, 0.45);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(81, 210, 255, 0.15), transparent 32%),
+        radial-gradient(circle at 86% 3%, rgba(156, 125, 255, 0.2), transparent 28%),
+        radial-gradient(circle at 40% 100%, rgba(47, 104, 255, 0.2), transparent 30%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .app {
+      width: min(1400px, 96vw);
+      margin: 0 auto;
+      padding: 20px 0 36px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 280px minmax(520px, 1fr) 320px;
+      grid-template-areas:
+        "top top top"
+        "left center right";
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar {
+      grid-area: top;
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .beacon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--accent), var(--accent-2));
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      box-shadow: 0 0 20px rgba(81, 210, 255, 0.6);
+      animation: pulse 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(81, 210, 255, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(81, 210, 255, 0.75); }
+    }
+
+    .title {
+      line-height: 1.2;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: 0.4px;
+    }
+
+    .title small { color: var(--muted); }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn, select, input[type="search"] {
+      border: 1px solid var(--line);
+      background: rgba(16, 28, 54, 0.9);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+    }
+
+    .btn {
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover,
+    .btn.active {
+      border-color: rgba(81, 210, 255, 0.7);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(55, 185, 255, 0.25);
+    }
+
+    .status {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--chip);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: #dce8ff;
+    }
+
+    .left, .center, .right {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .left { grid-area: left; }
+    .center { grid-area: center; }
+    .right { grid-area: right; }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 0.96rem;
+      letter-spacing: 0.3px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(145, 177, 255, 0.2);
+    }
+
+    .panel-body { padding: 12px 14px; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .kpi {
+      background: linear-gradient(145deg, rgba(34, 54, 97, 0.8), rgba(16, 28, 52, 0.95));
+      border: 1px solid rgba(145, 177, 255, 0.18);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .kpi strong {
+      font-size: 1.25rem;
+      display: block;
+      margin: 4px 0;
+    }
+
+    .muted { color: var(--muted); font-size: 0.82rem; }
+
+    .trial-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 420px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+    }
+
+    .trial-card {
+      border: 1px solid rgba(145, 177, 255, 0.2);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(17, 27, 50, 0.85);
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    .trial-card:hover,
+    .trial-card.active {
+      border-color: rgba(81, 210, 255, 0.62);
+      transform: translateX(3px);
+      box-shadow: 0 8px 20px rgba(4, 14, 34, 0.5);
+    }
+
+    .trial-card .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 3px 7px;
+      border: 1px solid rgba(145, 177, 255, 0.25);
+    }
+
+    .map {
+      position: relative;
+      min-height: 300px;
+      background: radial-gradient(circle at center, rgba(81, 210, 255, 0.08), rgba(5, 11, 24, 0.8));
+      border-radius: 12px;
+      border: 1px solid rgba(145, 177, 255, 0.2);
+      overflow: hidden;
+    }
+
+    .map::before,
+    .map::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(145, 177, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(145, 177, 255, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    .site {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      transition: 0.2s;
+      box-shadow: 0 0 0 0 rgba(81, 210, 255, 0.5);
+      animation: ping 2.4s infinite;
+    }
+
+    @keyframes ping {
+      0% { box-shadow: 0 0 0 0 rgba(81, 210, 255, 0.45); }
+      70% { box-shadow: 0 0 0 10px rgba(81, 210, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(81, 210, 255, 0); }
+    }
+
+    .site:hover { transform: translate(-50%, -50%) scale(1.25); }
+
+    .site.good { background: var(--good); }
+    .site.warn { background: var(--warn); }
+    .site.bad { background: var(--bad); }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(70px, 1fr));
+      gap: 8px;
+    }
+
+    .stage {
+      background: rgba(18, 30, 57, 0.9);
+      border: 1px solid rgba(145, 177, 255, 0.2);
+      border-radius: 10px;
+      padding: 8px;
+      min-height: 70px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .stage.active { border-color: rgba(81, 210, 255, 0.8); }
+
+    .event {
+      border-radius: 8px;
+      border: 1px solid rgba(145, 177, 255, 0.25);
+      padding: 6px;
+      background: rgba(35, 50, 87, 0.78);
+      font-size: 0.74rem;
+      cursor: grab;
+    }
+
+    .event:active { cursor: grabbing; }
+
+    canvas {
+      width: 100%;
+      height: 220px;
+      border-radius: 12px;
+      border: 1px solid rgba(145, 177, 255, 0.2);
+      background: rgba(12, 20, 39, 0.85);
+      display: block;
+    }
+
+    .stream {
+      max-height: 300px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+    }
+
+    .log {
+      background: rgba(18, 31, 57, 0.9);
+      border: 1px solid rgba(145, 177, 255, 0.18);
+      border-radius: 10px;
+      padding: 9px;
+      font-size: 0.8rem;
+      display: grid;
+      gap: 5px;
+    }
+
+    .severity { font-weight: 700; letter-spacing: .3px; }
+    .sev-info { color: var(--accent); }
+    .sev-warn { color: var(--warn); }
+    .sev-critical { color: var(--bad); }
+
+    .sim-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .slider {
+      display: grid;
+      gap: 5px;
+      font-size: 0.8rem;
+    }
+
+    input[type="range"] { width: 100%; }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .footer-note {
+      font-size: 0.73rem;
+      color: var(--muted);
+      text-align: right;
+      padding-right: 6px;
+    }
+
+    @media (max-width: 1180px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-areas: "top" "left" "center" "right";
+      }
+
+      .topbar { grid-template-columns: 1fr; }
+      .status { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="topbar panel">
+      <div class="brand">
+        <div class="beacon">🗼</div>
+        <div class="title">
+          <h1>Lighthouse | Clinical Trial Control Tower</h1>
+          <small>Prototype mode • unified operational intelligence</small>
+        </div>
+      </div>
+      <div class="controls">
+        <input id="trialSearch" type="search" placeholder="Search protocol, sponsor, indication..." />
+        <select id="riskFilter">
+          <option value="all">All risk levels</option>
+          <option value="green">Low Risk</option>
+          <option value="amber">Medium Risk</option>
+          <option value="red">High Risk</option>
+        </select>
+        <button id="autoPilotBtn" class="btn active">Autopilot ON</button>
+      </div>
+      <div class="status">
+        <span class="chip" id="clockChip"></span>
+        <span class="chip" id="portfolioChip"></span>
+        <span class="chip" id="alertsChip"></span>
+      </div>
+    </section>
+
+    <section class="left">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Portfolio KPIs</h2>
+          <span class="muted">Live refresh</span>
+        </div>
+        <div class="panel-body kpi-grid" id="kpiGrid"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Active Trials</h2>
+          <span class="muted" id="trialCount"></span>
+        </div>
+        <div class="panel-body">
+          <ul class="trial-list" id="trialList"></ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="center">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Global Site Pulse</h2>
+          <span class="muted">Click site for quick action</span>
+        </div>
+        <div class="panel-body">
+          <div class="map" id="siteMap"></div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Enrollment Velocity (Actual vs Predicted)</h2>
+          <span class="muted" id="velocityMeta"></span>
+        </div>
+        <div class="panel-body">
+          <canvas id="velocityChart" width="900" height="260"></canvas>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Operational Timeline (Drag & Drop)</h2>
+          <span class="muted">Reorder events to simulate slippage</span>
+        </div>
+        <div class="panel-body timeline" id="timeline"></div>
+      </article>
+    </section>
+
+    <section class="right">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Agent Signal Stream</h2>
+          <button class="btn" id="injectSignalBtn">Inject Signal</button>
+        </div>
+        <div class="panel-body stream" id="signalStream"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Scenario Simulator</h2>
+          <span class="muted">What-if controls</span>
+        </div>
+        <div class="panel-body sim-grid">
+          <label class="slider">Site Activation Delay: <strong id="delayVal">4</strong> weeks
+            <input id="delaySlider" type="range" min="0" max="12" value="4" />
+          </label>
+          <label class="slider">Dropout Pressure: <strong id="dropoutVal">11</strong>%
+            <input id="dropoutSlider" type="range" min="2" max="30" value="11" />
+          </label>
+          <label class="slider">Regulatory Friction: <strong id="regVal">Medium</strong>
+            <input id="regSlider" type="range" min="0" max="2" value="1" />
+          </label>
+          <div class="actions">
+            <button class="btn" id="runSimBtn">Run Forecast</button>
+            <button class="btn" id="resetSimBtn">Reset</button>
+          </div>
+          <div id="simOutput" class="log"></div>
+        </div>
+      </article>
+      <div class="footer-note">Prototype: Lighthouse v0.1 • Not for production use</div>
+    </section>
+  </main>
+
+  <script>
+    const trials = [
+      { id: 'LH-201', protocol: 'Phase III NSCLC', sponsor: 'AstraNex', risk: 'red', progress: 63, sites: 42, region: 'NA/EU', enrollmentGap: -18 },
+      { id: 'LH-332', protocol: 'IBD Pediatric', sponsor: 'NovaVida', risk: 'amber', progress: 48, sites: 31, region: 'US/LATAM', enrollmentGap: -7 },
+      { id: 'LH-440', protocol: 'mRNA RSV Booster', sponsor: 'Helixium', risk: 'green', progress: 72, sites: 56, region: 'Global', enrollmentGap: 3 },
+      { id: 'LH-289', protocol: 'Rare Neuro AAV', sponsor: 'Orphia', risk: 'red', progress: 26, sites: 18, region: 'US/EU', enrollmentGap: -22 },
+      { id: 'LH-517', protocol: 'Obesity Combo', sponsor: 'Metriq', risk: 'amber', progress: 54, sites: 64, region: 'Global', enrollmentGap: -10 }
+    ];
+
+    const siteData = [
+      { name: 'Boston', x: 21, y: 30, status: 'warn', action: 'IRB amendment due in 5 days' },
+      { name: 'São Paulo', x: 29, y: 67, status: 'good', action: 'Recruitment above plan +14%' },
+      { name: 'London', x: 47, y: 25, status: 'warn', action: 'Data query backlog rising' },
+      { name: 'Nairobi', x: 57, y: 58, status: 'good', action: 'Startup cycle time improved 11%' },
+      { name: 'Mumbai', x: 67, y: 45, status: 'bad', action: 'Randomization failure cluster detected' },
+      { name: 'Seoul', x: 77, y: 33, status: 'good', action: 'Site retention best in class' },
+      { name: 'Sydney', x: 84, y: 77, status: 'warn', action: 'PI turnover risk (moderate)' }
+    ];
+
+    const streamSeeds = [
+      ['info', 'Country agent recommends adding 3 backup sites in Eastern Europe.'],
+      ['warn', 'Enrollment velocity down 9% in Trial LH-201 over last 14 days.'],
+      ['critical', 'Protocol deviation spike exceeds threshold at 2 high-volume sites.'],
+      ['info', 'Budget burn rate remains within tolerance window.'],
+      ['warn', 'Median activation lag increased by 6 days in LATAM region.']
+    ];
+
+    const timelineTemplate = {
+      Setup: ['Protocol finalization', 'Site pre-screen'],
+      Startup: ['Regulatory package', 'Contract execution'],
+      Activate: ['SIV completion'],
+      Enroll: ['Enrollment sprint'],
+      Treat: ['Primary endpoint read'],
+      Close: ['DB lock readiness']
+    };
+
+    const kpiGrid = document.getElementById('kpiGrid');
+    const trialList = document.getElementById('trialList');
+    const trialCount = document.getElementById('trialCount');
+    const trialSearch = document.getElementById('trialSearch');
+    const riskFilter = document.getElementById('riskFilter');
+    const siteMap = document.getElementById('siteMap');
+    const signalStream = document.getElementById('signalStream');
+    const injectSignalBtn = document.getElementById('injectSignalBtn');
+    const clockChip = document.getElementById('clockChip');
+    const alertsChip = document.getElementById('alertsChip');
+    const portfolioChip = document.getElementById('portfolioChip');
+    const velocityMeta = document.getElementById('velocityMeta');
+    const timeline = document.getElementById('timeline');
+
+    const delaySlider = document.getElementById('delaySlider');
+    const dropoutSlider = document.getElementById('dropoutSlider');
+    const regSlider = document.getElementById('regSlider');
+    const delayVal = document.getElementById('delayVal');
+    const dropoutVal = document.getElementById('dropoutVal');
+    const regVal = document.getElementById('regVal');
+    const simOutput = document.getElementById('simOutput');
+    const runSimBtn = document.getElementById('runSimBtn');
+    const resetSimBtn = document.getElementById('resetSimBtn');
+    const autoPilotBtn = document.getElementById('autoPilotBtn');
+
+    let selectedTrial = trials[0].id;
+    let autoPilot = true;
+
+    function renderKpis() {
+      const totalSites = trials.reduce((sum, t) => sum + t.sites, 0);
+      const avgProgress = Math.round(trials.reduce((sum, t) => sum + t.progress, 0) / trials.length);
+      const highRisk = trials.filter(t => t.risk === 'red').length;
+      const gap = trials.reduce((sum, t) => sum + t.enrollmentGap, 0);
+
+      const cards = [
+        ['Trials in Flight', trials.length, 'Across portfolio'],
+        ['Open Sites', totalSites, 'Ready for randomization'],
+        ['Avg Progress', `${avgProgress}%`, 'Milestone completion'],
+        ['High Risk Protocols', highRisk, 'Needs intervention'],
+        ['Enrollment Gap', `${gap > 0 ? '+' : ''}${gap}%`, 'Vs forecast curve'],
+        ['Auto Escalations', Math.max(highRisk - 1, 0), 'Triggered this week']
+      ];
+
+      kpiGrid.innerHTML = cards.map(([label, value, note]) => `
+        <div class="kpi">
+          <span class="muted">${label}</span>
+          <strong>${value}</strong>
+          <span class="muted">${note}</span>
+        </div>
+      `).join('');
+
+      portfolioChip.textContent = `Portfolio health: ${avgProgress > 60 ? 'Stable' : 'Watchlist'}`;
+      alertsChip.textContent = `${highRisk + 2} active alerts`;
+    }
+
+    function filteredTrials() {
+      const search = trialSearch.value.trim().toLowerCase();
+      const risk = riskFilter.value;
+      return trials.filter(t => {
+        const riskOk = risk === 'all' || t.risk === risk;
+        const text = `${t.id} ${t.protocol} ${t.sponsor} ${t.region}`.toLowerCase();
+        return riskOk && text.includes(search);
+      });
+    }
+
+    function renderTrials() {
+      const list = filteredTrials();
+      trialCount.textContent = `${list.length} shown`;
+      trialList.innerHTML = list.map(t => `
+        <li class="trial-card ${t.id === selectedTrial ? 'active' : ''}" data-id="${t.id}">
+          <strong>${t.id}</strong> • ${t.protocol}
+          <div class="meta">
+            <span class="pill">${t.sponsor}</span>
+            <span class="pill">${t.region}</span>
+            <span class="pill">${t.sites} sites</span>
+            <span class="pill">Risk: ${t.risk.toUpperCase()}</span>
+          </div>
+        </li>
+      `).join('');
+    }
+
+    function renderMap() {
+      siteMap.innerHTML = '';
+      siteData.forEach(site => {
+        const dot = document.createElement('button');
+        dot.className = `site ${site.status}`;
+        dot.style.left = `${site.x}%`;
+        dot.style.top = `${site.y}%`;
+        dot.title = `${site.name} • ${site.action}`;
+        dot.addEventListener('click', () => addSignal('info', `${site.name}: ${site.action}`));
+        siteMap.appendChild(dot);
+      });
+    }
+
+    function addSignal(level, text) {
+      const entry = document.createElement('div');
+      entry.className = 'log';
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      entry.innerHTML = `<span class="severity sev-${level}">${level.toUpperCase()}</span><span>${text}</span><span class="muted">${now}</span>`;
+      signalStream.prepend(entry);
+      while (signalStream.children.length > 10) signalStream.removeChild(signalStream.lastChild);
+    }
+
+    function seedSignals() {
+      signalStream.innerHTML = '';
+      streamSeeds.forEach(([level, msg]) => addSignal(level, msg));
+    }
+
+    function drawVelocity() {
+      const canvas = document.getElementById('velocityChart');
+      const ctx = canvas.getContext('2d');
+      const { width, height } = canvas;
+      ctx.clearRect(0, 0, width, height);
+
+      const selected = trials.find(t => t.id === selectedTrial) || trials[0];
+      const points = 12;
+      const actual = Array.from({ length: points }, (_, i) => 14 + i * 6 + (Math.random() * 10 - 4) + selected.enrollmentGap / 3);
+      const predicted = Array.from({ length: points }, (_, i) => 16 + i * 6.4);
+
+      const margin = { left: 46, right: 16, top: 18, bottom: 30 };
+      const w = width - margin.left - margin.right;
+      const h = height - margin.top - margin.bottom;
+
+      const yMax = Math.max(...actual, ...predicted) + 6;
+      const yMin = Math.min(...actual, ...predicted) - 5;
+
+      function xScale(i) { return margin.left + (i / (points - 1)) * w; }
+      function yScale(v) { return margin.top + (1 - (v - yMin) / (yMax - yMin)) * h; }
+
+      ctx.strokeStyle = 'rgba(145,177,255,0.26)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = margin.top + (i / 4) * h;
+        ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(width - margin.right, y); ctx.stroke();
+      }
+
+      function drawLine(arr, color) {
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = color;
+        arr.forEach((v, i) => {
+          const x = xScale(i), y = yScale(v);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        arr.forEach((v, i) => {
+          const x = xScale(i), y = yScale(v);
+          ctx.fillStyle = color;
+          ctx.beginPath(); ctx.arc(x, y, 3.2, 0, Math.PI * 2); ctx.fill();
+        });
+      }
+
+      drawLine(predicted, 'rgba(156,125,255,0.9)');
+      drawLine(actual, 'rgba(81,210,255,1)');
+
+      ctx.fillStyle = 'rgba(212,226,255,0.86)';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('Predicted', width - 148, 20);
+      ctx.fillText('Actual', width - 74, 20);
+      ctx.fillStyle = 'rgba(156,125,255,0.95)';
+      ctx.fillRect(width - 212, 12, 30, 3);
+      ctx.fillStyle = 'rgba(81,210,255,1)';
+      ctx.fillRect(width - 132, 12, 30, 3);
+
+      const delta = Math.round(actual[actual.length - 1] - predicted[predicted.length - 1]);
+      velocityMeta.textContent = `${selected.id} • current variance: ${delta >= 0 ? '+' : ''}${delta} participants`;
+    }
+
+    function renderTimeline() {
+      timeline.innerHTML = Object.entries(timelineTemplate).map(([stage, events], idx) => `
+        <div class="stage ${idx === 3 ? 'active' : ''}" data-stage="${stage}">
+          <strong>${stage}</strong>
+          ${events.map((event, eventIdx) => `<div class="event" draggable="true" data-event="${stage}-${eventIdx}">${event}</div>`).join('')}
+        </div>
+      `).join('');
+
+      let dragged = null;
+      timeline.querySelectorAll('.event').forEach(el => {
+        el.addEventListener('dragstart', () => dragged = el);
+      });
+
+      timeline.querySelectorAll('.stage').forEach(stage => {
+        stage.addEventListener('dragover', (e) => e.preventDefault());
+        stage.addEventListener('drop', () => {
+          if (!dragged) return;
+          stage.appendChild(dragged);
+          addSignal('warn', `Timeline updated: moved "${dragged.textContent}" to ${stage.dataset.stage}.`);
+        });
+      });
+    }
+
+    function simulate() {
+      const delay = Number(delaySlider.value);
+      const dropout = Number(dropoutSlider.value);
+      const reg = Number(regSlider.value);
+      const regTxt = ['Low', 'Medium', 'High'][reg];
+      delayVal.textContent = delay;
+      dropoutVal.textContent = dropout;
+      regVal.textContent = regTxt;
+
+      const impact = Math.round((delay * 1.8) + (dropout * 0.9) + (reg * 8));
+      const confidence = Math.max(55, 92 - impact);
+      const etaSlip = Math.round(impact / 3.4);
+      const mitigation = impact > 30
+        ? 'Escalate to startup tiger team + trigger adaptive site substitution.'
+        : 'Maintain current cadence, add targeted patient outreach in low-performing clusters.';
+
+      simOutput.innerHTML = `
+        <span class="severity ${impact > 30 ? 'sev-critical' : 'sev-warn'}">Forecast Impact Score: ${impact}</span>
+        <span>Projected DB lock shift: <strong>${etaSlip} weeks</strong></span>
+        <span>Model confidence: <strong>${confidence}%</strong></span>
+        <span class="muted">Recommended action: ${mitigation}</span>
+      `;
+
+      addSignal(impact > 30 ? 'critical' : 'warn', `Scenario forecast completed with impact score ${impact}.`);
+      drawVelocity();
+    }
+
+    function tickClock() {
+      const now = new Date();
+      clockChip.textContent = `UTC ${now.toISOString().slice(11, 19)}`;
+    }
+
+    function bindEvents() {
+      [trialSearch, riskFilter].forEach(el => el.addEventListener('input', renderTrials));
+
+      trialList.addEventListener('click', (e) => {
+        const card = e.target.closest('.trial-card');
+        if (!card) return;
+        selectedTrial = card.dataset.id;
+        renderTrials();
+        drawVelocity();
+        addSignal('info', `${selectedTrial} selected for deep monitoring.`);
+      });
+
+      injectSignalBtn.addEventListener('click', () => {
+        const random = streamSeeds[Math.floor(Math.random() * streamSeeds.length)];
+        addSignal(random[0], random[1]);
+      });
+
+      [delaySlider, dropoutSlider, regSlider].forEach(s => s.addEventListener('input', simulate));
+      runSimBtn.addEventListener('click', simulate);
+      resetSimBtn.addEventListener('click', () => {
+        delaySlider.value = 4;
+        dropoutSlider.value = 11;
+        regSlider.value = 1;
+        simulate();
+      });
+
+      autoPilotBtn.addEventListener('click', () => {
+        autoPilot = !autoPilot;
+        autoPilotBtn.classList.toggle('active', autoPilot);
+        autoPilotBtn.textContent = autoPilot ? 'Autopilot ON' : 'Autopilot OFF';
+        addSignal(autoPilot ? 'info' : 'warn', `Autopilot ${autoPilot ? 'enabled' : 'disabled'} by operator.`);
+      });
+    }
+
+    function init() {
+      renderKpis();
+      renderTrials();
+      renderMap();
+      renderTimeline();
+      seedSignals();
+      simulate();
+      drawVelocity();
+      tickClock();
+      setInterval(tickClock, 1000);
+      if (autoPilot) {
+        setInterval(() => {
+          const random = streamSeeds[Math.floor(Math.random() * streamSeeds.length)];
+          addSignal(random[0], random[1]);
+        }, 9500);
+      }
+      bindEvents();
+    }
+
+    init();
+  </script>
+</body>
+</html>
