@@ -16,7 +16,7 @@ A standalone single-page HTML dashboard for the Clinical Trial Control Tower con
 An intelligent pharmacy opportunity scoring and analysis tool. The Python/FastAPI backend provides scoring, sandbox, and governance APIs, while the React/TypeScript frontend delivers an interactive triage dashboard for evaluating pharmacy implementation opportunities.
 
 ### Tic-Tac-Toe (`tictactoe/`)
-A simple Python tic-tac-toe game.
+A simple Python tic-tac-toe game plus a browser-based front end (`tictactoe/index.html`).
 
 ---
 
