@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing Scenario Configurator Plus</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --red: #cc0000;
+    --red-dark: #970606;
+    --ink: #201d1a;
+    --muted: #6f6760;
+    --soft: #fbfaf8;
+    --paper: #ffffff;
+    --line: #ded9d3;
+    --line-soft: #eee9e3;
+    --amber: #9b5f00;
+    --green: #197149;
+    --teal: #11707b;
+    --shadow: 0 16px 44px rgba(32, 29, 26, 0.08);
+  }
+
+  html, body {
+    min-height: 100%;
+    margin: 0;
+    background: var(--soft);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.4;
+  }
+
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+  .accent { height: 4px; background: var(--red); }
+  .app { width: min(1500px, 100%); margin: 0 auto; padding: 18px; }
+  .topbar { display: grid; grid-template-columns: minmax(260px, 1fr) auto; gap: 16px; align-items: center; margin-bottom: 16px; }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand-mark { width: 38px; height: 38px; border: 1px solid var(--ink); display: grid; place-items: center; color: var(--red); background: var(--paper); }
+  .brand-title { min-width: 0; }
+  .eyebrow { color: var(--muted); display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  h1, h2, h3, p { margin: 0; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.35rem, 2vw, 2rem); font-weight: 500; }
+  .top-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+  .layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; align-items: start; }
+  .sidebar { position: sticky; top: 14px; }
+  .panel, .group-card, .insight-card { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); }
+  .panel { overflow: hidden; }
+  .panel-section { padding: 16px; border-bottom: 1px solid var(--line-soft); }
+  .panel-section:last-child { border-bottom: 0; }
+  .section-title { color: var(--muted); display: block; font-size: 0.72rem; letter-spacing: 0.1em; margin-bottom: 9px; text-transform: uppercase; }
+  .scenario-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tab-button { border: 1px solid var(--line); background: var(--paper); color: var(--muted); border-radius: 999px; padding: 7px 11px; max-width: 180px; min-height: 34px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tab-button.active { border-color: var(--red); color: var(--red-dark); background: #fff7f7; }
+  .btn, .icon-btn { border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 5px; min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease; }
+  .btn { padding: 0 11px; }
+  .btn:hover, .icon-btn:hover { border-color: var(--ink); }
+  .btn.primary { border-color: var(--red); background: var(--red); color: white; }
+  .btn.primary:hover { background: var(--red-dark); }
+  .btn.danger:hover, .icon-btn.danger:hover { color: var(--red-dark); border-color: #e4b6b6; background: #fff7f7; }
+  .icon-btn { width: 34px; padding: 0; }
+  .icon { width: 15px; height: 15px; display: block; flex: 0 0 auto; }
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  label { color: var(--muted); display: block; font-size: 0.72rem; letter-spacing: 0.09em; margin-bottom: 5px; text-transform: uppercase; }
+  .input, .select { width: 100%; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 5px; min-height: 38px; padding: 8px 10px; font-variant-numeric: tabular-nums; }
+  .input:focus, .select:focus, .small-input:focus, .role-title:focus { outline: 2px solid rgba(204, 0, 0, 0.15); border-color: var(--red); }
+  .stepper { display: grid; grid-template-columns: 34px 1fr 34px; gap: 6px; }
+  .total-block { background: #fff7f7; }
+  .big-money { color: var(--red-dark); font-family: Georgia, "Times New Roman", serif; font-size: 2.05rem; font-weight: 600; letter-spacing: 0; line-height: 1.05; overflow-wrap: anywhere; }
+  .summary-rows { display: grid; gap: 8px; }
+  .summary-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 0.9rem; }
+  .summary-row span:first-child { color: var(--muted); }
+  .summary-value { font-family: Georgia, "Times New Roman", serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .summary-value.good { color: var(--green); }
+  .summary-value.warn { color: var(--amber); }
+  .filter-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .toggle { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.88rem; }
+  .toggle input { width: 17px; height: 17px; accent-color: var(--red); }
+  .stack { display: grid; gap: 10px; }
+  .insights { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr); gap: 14px; margin-bottom: 18px; }
+  .insight-card { padding: 16px; min-width: 0; box-shadow: none; }
+  .insight-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .insight-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.08rem; font-weight: 500; }
+  .chart-wrap { width: 100%; min-height: 238px; border: 1px solid var(--line-soft); border-radius: 5px; background: linear-gradient(#fff, #fffaf8); overflow: hidden; }
+  .chart-svg { display: block; width: 100%; height: 238px; }
+  .team-mix { display: grid; gap: 10px; }
+  .mix-row { display: grid; grid-template-columns: 104px 1fr 92px; gap: 10px; align-items: center; font-size: 0.88rem; }
+  .mix-name { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mix-bar { height: 10px; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
+  .mix-fill { height: 100%; border-radius: inherit; background: var(--red); }
+  .mix-fill.expert { background: var(--teal); }
+  .mix-fill.gc { background: var(--amber); }
+  .mix-value { font-variant-numeric: tabular-nums; text-align: right; }
+  .compare { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  .compare th, .compare td { border-bottom: 1px solid var(--line-soft); padding: 8px 6px; text-align: right; white-space: nowrap; }
+  .compare th:first-child, .compare td:first-child { text-align: left; white-space: normal; }
+  .compare th { color: var(--muted); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .compare tr.active td { background: #fff7f7; color: var(--red-dark); }
+  .groups { display: grid; gap: 16px; }
+  .group-card { overflow: hidden; box-shadow: none; }
+  .group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 15px 18px; border-bottom: 1px solid var(--line-soft); }
+  .group-title-wrap { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .group-title { font-family: Georgia, "Times New Roman", serif; font-size: 1.15rem; font-weight: 500; }
+  .subtotal { text-align: right; }
+  .subtotal .value { display: block; font-family: Georgia, "Times New Roman", serif; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .scroll-x { overflow-x: auto; }
+  .grid-row { display: flex; min-width: max-content; border-bottom: 1px solid var(--line-soft); align-items: stretch; }
+  .grid-row.head { background: #faf8f5; }
+  .grid-row.head .cell { color: var(--muted); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cell { flex: 0 0 auto; padding: 8px 7px; display: flex; align-items: center; }
+  .cell-title { width: 214px; padding-left: 18px; }
+  .cell-rate { width: 118px; }
+  .cell-pattern { width: 184px; }
+  .cell-master { width: 82px; background: rgba(204, 0, 0, 0.045); }
+  .cell-week { width: 60px; justify-content: center; }
+  .cell-fee { width: 124px; justify-content: flex-end; text-align: right; }
+  .cell-actions { width: 54px; justify-content: flex-end; padding-right: 18px; }
+  .role-title { width: 100%; border: 1px solid transparent; border-radius: 4px; background: transparent; min-height: 31px; padding: 4px 5px; font-weight: 600; }
+  .rate-wrap { display: flex; align-items: baseline; gap: 3px; min-width: 0; }
+  .currency, .suffix { color: var(--muted); font-size: 0.76rem; }
+  .small-input { width: 100%; min-height: 31px; border: 1px solid transparent; border-radius: 4px; background: transparent; padding: 4px 5px; text-align: center; font-variant-numeric: tabular-nums; }
+  .rate-input { width: 48px; text-align: right; }
+  .small-input:hover, .role-title:hover { border-color: var(--line); background: white; }
+  .pattern-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; }
+  .mini-btn { min-height: 29px; border: 1px solid var(--line); background: white; border-radius: 4px; color: var(--muted); font-size: 0.76rem; padding: 0 5px; }
+  .mini-btn:hover { color: var(--ink); border-color: var(--ink); }
+  .fee { font-family: Georgia, "Times New Roman", serif; font-size: 0.97rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .group-foot { padding: 12px 18px; background: #faf8f5; display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid var(--line-soft); }
+  .empty { padding: 18px; color: var(--muted); font-style: italic; }
+  .toast { position: fixed; right: 18px; bottom: 18px; background: var(--ink); color: white; padding: 10px 13px; border-radius: 6px; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 0.16s ease, transform 0.16s ease; z-index: 10; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (max-width: 1180px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } .insights { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .app { padding: 12px; } .topbar { grid-template-columns: 1fr; } .top-actions { justify-content: flex-start; } .field-grid { grid-template-columns: 1fr; } .group-head, .group-foot { align-items: flex-start; flex-direction: column; } .subtotal { text-align: left; } }
+</style>
+</head>
+<body>
+<div class="accent"></div>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="m7 15 4-5 4 3 5-7"></path></svg></div><div class="brand-title"><span class="eyebrow">Pricing tool</span><h1>Scenario Configurator Plus</h1></div></div>
+    <div class="top-actions"><button class="btn" id="copy-summary" type="button">Copy summary</button><button class="btn" id="export-csv" type="button">Export CSV</button><button class="btn primary" id="export-json" type="button">Export plan</button></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><div class="panel">
+      <section class="panel-section"><span class="section-title">Scenarios</span><div class="scenario-tabs" id="scenario-tabs"></div></section>
+      <section class="panel-section"><div class="field-grid"><div class="field full"><label for="scenario-name">Scenario name</label><input class="input" id="scenario-name" type="text"></div><div class="field"><label for="weeks-input">Weeks</label><div class="stepper"><button class="icon-btn" id="weeks-minus" type="button" aria-label="Decrease weeks">-</button><input class="input" id="weeks-input" type="number" min="1" max="52" step="1"><button class="icon-btn" id="weeks-plus" type="button" aria-label="Increase weeks">+</button></div></div><div class="field"><label for="expense-input">Expenses %</label><input class="input" id="expense-input" type="number" min="0" max="100" step="0.5"></div><div class="field"><label for="discount-input">Discount %</label><input class="input" id="discount-input" type="number" min="0" max="100" step="0.5"></div><div class="field"><label for="contingency-input">Contingency %</label><input class="input" id="contingency-input" type="number" min="0" max="100" step="0.5"></div><div class="field full"><label for="target-input">Target budget</label><input class="input" id="target-input" type="number" min="0" step="50000"></div></div></section>
+      <section class="panel-section total-block"><span class="section-title">Total after adjustments</span><div class="big-money" id="total-display">$0</div></section>
+      <section class="panel-section"><div class="summary-rows" id="summary-rows"></div></section>
+      <section class="panel-section"><span class="section-title">View</span><div class="filter-row"><div class="field"><label for="role-search">Role search</label><input class="input" id="role-search" type="search" placeholder="Search roles"></div><div class="field"><label for="team-filter">Team filter</label><select class="select" id="team-filter"></select></div><label class="toggle"><input id="hide-zero" type="checkbox"> Hide zero-allocation roles</label></div></section>
+      <section class="panel-section"><div class="stack"><button class="btn" id="duplicate-scenario" type="button">Duplicate scenario</button><button class="btn" id="new-scenario" type="button">New scenario</button><button class="btn" id="import-json" type="button">Import plan</button><button class="btn danger" id="reset-active" type="button">Reset scenario</button></div></section>
+    </div></aside>
+    <main><section class="insights"><div class="insight-card"><div class="insight-head"><h2>Weekly fee curve</h2><span class="eyebrow" id="peak-week">Peak week</span></div><div class="chart-wrap" id="weekly-chart"></div></div><div class="insight-card"><div class="insight-head"><h2>Scenario comparison</h2><span class="eyebrow" id="scenario-count">0 scenarios</span></div><div class="team-mix" id="team-mix"></div><div style="overflow-x:auto; margin-top:14px;"><table class="compare" id="compare-table"></table></div></div></section><section class="groups" id="groups"></section></main>
+  </div>
+</div>
+<input class="sr-only" id="import-file" type="file" accept="application/json,.json"><div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const STORAGE_KEY="pricing-configurator-plus-v1";let nextRoleId=1000,nextScenarioId=10;const app={activeId:"s1",roleQuery:"",teamFilter:"all",hideZero:false,scenarios:[]};const $=id=>document.getElementById(id);const fmtUSD=n=>"$"+Math.round(n||0).toLocaleString("en-US");const fmtPct=n=>(Math.round((n||0)*10)/10).toLocaleString("en-US")+"%";const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));const clamp=(v,min,max)=>{const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):min};const roleId=()=>"r"+nextRoleId++;const scenarioId=()=>"s"+nextScenarioId++;const deepClone=v=>JSON.parse(JSON.stringify(v));
+const INITIAL_DATA=[{id:"partner",name:"Partner team",roles:[{id:"p1",title:"Senior Partner",rate:79000,defaultAlloc:30},{id:"p2",title:"Operating Partner",rate:79000,defaultAlloc:40},{id:"p3",title:"Advisor (Client)",rate:79000,defaultAlloc:10},{id:"p4",title:"Advisor (Client)",rate:79000,defaultAlloc:10}]},{id:"expert",name:"Expert team",roles:[{id:"e1",title:"Expert SMAP",rate:44000,defaultAlloc:50},{id:"e2",title:"Expert SMAP",rate:44000,defaultAlloc:50},{id:"e3",title:"SA",rate:23000,defaultAlloc:100},{id:"e4",title:"SA",rate:23000,defaultAlloc:100}]},{id:"gc",name:"GC team",roles:[{id:"g1",title:"Manager",rate:54000,defaultAlloc:100},{id:"g2",title:"C/AC",rate:24000,defaultAlloc:100},{id:"g3",title:"C/AC",rate:24000,defaultAlloc:100}]}];
+function buildGroups(weeks,transforms={}){return INITIAL_DATA.map(g=>({id:g.id,name:g.name,roles:g.roles.map(r=>{const base=Array.from({length:weeks},()=>r.defaultAlloc);const allocs=transforms[g.id]?transforms[g.id](r,base):base;return{id:r.id+"-"+roleId(),title:r.title,rate:r.rate,weeklyAllocs:allocs.map(n=>clamp(Math.round(n),0,100))}})}))}
+function makeScenario(name,o={}){const weeks=o.weeks||12;return{id:o.id||scenarioId(),name,weeks,expenseRate:o.expenseRate??15,discountRate:o.discountRate??0,contingencyRate:o.contingencyRate??0,targetBudget:o.targetBudget??3200000,groups:o.groups||buildGroups(weeks,o.transforms||{})}}
+function seedState(){app.scenarios=[makeScenario("Baseline",{id:"s1",weeks:12,targetBudget:3200000}),makeScenario("Lean team",{id:"s2",weeks:10,expenseRate:12,discountRate:5,targetBudget:2500000,transforms:{partner:(r,b)=>b.map(v=>r.title.includes("Advisor")?5:Math.max(10,v-10)),expert:(r,b)=>b.map(v=>Math.max(40,v-15)),gc:(r,b)=>b.map(v=>r.title==="Manager"?80:90)}}),makeScenario("Accelerated",{id:"s3",weeks:8,expenseRate:15,contingencyRate:7.5,targetBudget:3000000,transforms:{partner:(r,b)=>b.map((v,i)=>i<2?Math.min(100,v+20):v),expert:(r,b)=>b.map(v=>Math.min(100,v+25)),gc:(r,b)=>b.map(v=>Math.min(100,v+10))}})];app.activeId="s1"}
+function activeScenario(){return app.scenarios.find(s=>s.id===app.activeId)||app.scenarios[0]}function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(app))}function loadState(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");if(saved&&Array.isArray(saved.scenarios)&&saved.scenarios.length){Object.assign(app,saved);return}}catch(e){}seedState()}
+function calcRoleFee(r){return r.weeklyAllocs.reduce((s,a)=>s+r.rate*a/100,0)}function calcScenario(sc){const teamSubs={},weekly=Array.from({length:sc.weeks},()=>0);sc.groups.forEach(g=>{teamSubs[g.id]=0;g.roles.forEach(r=>{teamSubs[g.id]+=calcRoleFee(r);r.weeklyAllocs.forEach((a,i)=>weekly[i]+=r.rate*a/100)})});const fees=Object.values(teamSubs).reduce((s,v)=>s+v,0),expenses=fees*sc.expenseRate/100,gross=fees+expenses,discount=gross*sc.discountRate/100,contingency=gross*sc.contingencyRate/100,total=gross-discount+contingency,variance=sc.targetBudget-total;return{teamSubs,weekly,fees,expenses,gross,discount,contingency,total,variance}}
+function findRole(gid,rid){const g=activeScenario().groups.find(x=>x.id===gid);return[g,g&&g.roles.find(r=>r.id===rid)]}function setInput(id,v){const el=$(id);if(document.activeElement!==el)el.value=v}function setWeeks(v){const sc=activeScenario(),w=clamp(Math.round(v),1,52);sc.weeks=w;sc.groups.forEach(g=>g.roles.forEach(r=>{if(r.weeklyAllocs.length>w)r.weeklyAllocs=r.weeklyAllocs.slice(0,w);while(r.weeklyAllocs.length<w)r.weeklyAllocs.push(r.weeklyAllocs.at(-1)||0)}));render()}function adjustWeeks(d){setWeeks(activeScenario().weeks+d)}
+function setScenarioField(f,v){const sc=activeScenario();if(f==="name")sc.name=String(v||"Untitled scenario");if(f==="expenseRate")sc.expenseRate=clamp(v,0,100);if(f==="discountRate")sc.discountRate=clamp(v,0,100);if(f==="contingencyRate")sc.contingencyRate=clamp(v,0,100);if(f==="targetBudget")sc.targetBudget=Math.max(0,Number(v||0));render()}function setRoleTitle(g,r,v){const[,role]=findRole(g,r);if(role)role.title=v;persist()}function setRoleRate(g,r,v){const[,role]=findRole(g,r);if(role)role.rate=Math.max(0,Number(v||0)*1000);render()}function setMasterAlloc(g,r,v){const[,role]=findRole(g,r);if(role){const a=clamp(Math.round(v),0,100);role.weeklyAllocs=role.weeklyAllocs.map(()=>a);render()}}function setWeekAlloc(g,r,i,v){const[,role]=findRole(g,r);if(role){role.weeklyAllocs[i]=clamp(Math.round(v),0,100);render()}}
+function masterValue(r){if(!r.weeklyAllocs.length)return 0;const f=r.weeklyAllocs[0];return r.weeklyAllocs.every(v=>v===f)?f:Math.round(r.weeklyAllocs.reduce((s,v)=>s+v,0)/r.weeklyAllocs.length)}function applyPattern(g,r,p){const[,role]=findRole(g,r),sc=activeScenario();if(!role)return;const base=masterValue(role),last=Math.max(1,sc.weeks-1);role.weeklyAllocs=role.weeklyAllocs.map((_,i)=>{const q=i/last;if(p==="flat")return base;if(p==="ramp")return clamp(Math.round(base*(.35+q*.9)),0,100);if(p==="taper")return clamp(Math.round(base*(1.2-q*.85)),0,100);return 0});render()}function addRole(gid){const sc=activeScenario(),g=sc.groups.find(x=>x.id===gid);if(g){g.roles.push({id:roleId(),title:"New role",rate:50000,weeklyAllocs:Array.from({length:sc.weeks},()=>50)});render()}}function deleteRole(gid,rid){const[g]=findRole(gid,rid);if(g){g.roles=g.roles.filter(r=>r.id!==rid);render()}}
+function duplicateScenario(){const c=deepClone(activeScenario());c.id=scenarioId();c.name+=" copy";c.groups.forEach(g=>g.roles.forEach(r=>r.id=roleId()));app.scenarios.push(c);app.activeId=c.id;render()}function newScenario(){const sc=makeScenario("New scenario",{weeks:activeScenario().weeks,targetBudget:activeScenario().targetBudget});app.scenarios.push(sc);app.activeId=sc.id;render()}function resetActiveScenario(){const cur=activeScenario(),i=app.scenarios.findIndex(s=>s.id===cur.id);app.scenarios[i]=makeScenario(cur.name||"Baseline",{id:cur.id,weeks:12,expenseRate:15,targetBudget:3200000});render()}function removeScenario(id){if(app.scenarios.length===1)return;app.scenarios=app.scenarios.filter(s=>s.id!==id);if(app.activeId===id)app.activeId=app.scenarios[0].id;render()}function selectScenario(id){app.activeId=id;render()}
+function matchesFilters(g,r){const q=app.roleQuery.trim().toLowerCase();return(app.teamFilter==="all"||g.id===app.teamFilter)&&(!q||r.title.toLowerCase().includes(q)||g.name.toLowerCase().includes(q))&&(!app.hideZero||r.weeklyAllocs.some(v=>v>0))}function renderTabs(){$("scenario-tabs").innerHTML=app.scenarios.map(s=>`<button class="tab-button ${s.id===app.activeId?"active":""}" type="button" onclick="selectScenario('${s.id}')">${escapeHtml(s.name)}</button>`).join("");$("scenario-count").textContent=app.scenarios.length+(app.scenarios.length===1?" scenario":" scenarios")}
+function renderControls(){const sc=activeScenario();setInput("scenario-name",sc.name);setInput("weeks-input",sc.weeks);setInput("expense-input",sc.expenseRate);setInput("discount-input",sc.discountRate);setInput("contingency-input",sc.contingencyRate);setInput("target-input",Math.round(sc.targetBudget));setInput("role-search",app.roleQuery);$("hide-zero").checked=app.hideZero;$("team-filter").innerHTML=['<option value="all">All teams</option>'].concat(sc.groups.map(g=>`<option value="${escapeHtml(g.id)}">${escapeHtml(g.name)}</option>`)).join("");$("team-filter").value=app.teamFilter}
+function renderSummary(c){$("total-display").textContent=fmtUSD(c.total);$("summary-rows").innerHTML=`<div class="summary-row"><span>Fees before expenses</span><strong class="summary-value">${fmtUSD(c.fees)}</strong></div><div class="summary-row"><span>Expenses</span><strong class="summary-value">${fmtUSD(c.expenses)}</strong></div><div class="summary-row"><span>Discount</span><strong class="summary-value">- ${fmtUSD(c.discount)}</strong></div><div class="summary-row"><span>Contingency</span><strong class="summary-value">+ ${fmtUSD(c.contingency)}</strong></div><div class="summary-row"><span>Target variance</span><strong class="summary-value ${c.variance>=0?"good":"warn"}">${c.variance>=0?"+":""}${fmtUSD(c.variance)}</strong></div>`}
+function renderWeeklyChart(c){const vals=c.weekly,max=Math.max(1,...vals),w=680,h=238,p={top:22,right:22,bottom:34,left:52},iw=w-p.left-p.right,ih=h-p.top-p.bottom,bw=Math.max(4,iw/Math.max(vals.length,1)-7),peak=vals.reduce((b,v,i)=>v>vals[b]?i:b,0);$("peak-week").textContent=vals.length?"Peak W"+(peak+1)+" "+fmtUSD(vals[peak]):"Peak week";const bars=vals.map((v,i)=>{const x=p.left+i*(iw/vals.length)+3,bh=v/max*ih,y=p.top+ih-bh,fill=i===peak?"#cc0000":"#bca99b";return`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${fill}"><title>Week ${i+1}: ${fmtUSD(v)}</title></rect>`}).join("");const labels=vals.map((_,i)=>{if(vals.length>16&&i%2!==0&&i!==vals.length-1)return"";const x=p.left+i*(iw/vals.length)+bw/2+3;return`<text x="${x.toFixed(1)}" y="${h-12}" text-anchor="middle" font-size="10" fill="#6f6760">W${i+1}</text>`}).join("");$("weekly-chart").innerHTML=`<svg class="chart-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="Weekly fee curve"><line x1="${p.left}" x2="${w-p.right}" y1="${p.top+ih}" y2="${p.top+ih}" stroke="#eee9e3"></line>${bars}${labels}</svg>`}
+function renderTeamMix(sc,c){const max=Math.max(1,...Object.values(c.teamSubs));$("team-mix").innerHTML=sc.groups.map(g=>{const v=c.teamSubs[g.id]||0,pct=v/Math.max(1,c.fees)*100,width=v/max*100,cls=g.id==="expert"?"expert":g.id==="gc"?"gc":"";return`<div class="mix-row"><div class="mix-name">${escapeHtml(g.name)}</div><div class="mix-bar"><div class="mix-fill ${cls}" style="width:${width}%"></div></div><div class="mix-value">${fmtPct(pct)}</div></div>`}).join("")}
+function renderCompareTable(){const active=activeScenario(),activeTotal=calcScenario(active).total;$("compare-table").innerHTML=`<thead><tr><th>Scenario</th><th>Weeks</th><th>Fees</th><th>Adjust.</th><th>Total</th><th>Delta</th></tr></thead><tbody>${app.scenarios.map(s=>{const c=calcScenario(s),d=c.total-activeTotal,a=c.expenses-c.discount+c.contingency;return`<tr class="${s.id===active.id?"active":""}"><td><button class="tab-button ${s.id===active.id?"active":""}" type="button" onclick="selectScenario('${s.id}')">${escapeHtml(s.name)}</button>${app.scenarios.length>1?` <button class="icon-btn danger" type="button" title="Remove scenario" onclick="removeScenario('${s.id}')">x</button>`:""}</td><td>${s.weeks}</td><td>${fmtUSD(c.fees)}</td><td>${a>=0?"+":""}${fmtUSD(a)}</td><td><strong>${fmtUSD(c.total)}</strong></td><td>${d>=0?"+":""}${fmtUSD(d)}</td></tr>`}).join("")}</tbody>`}
+function renderHeaderRow(sc){return`<div class="grid-row head"><div class="cell cell-title">Role</div><div class="cell cell-rate">Rate</div><div class="cell cell-pattern">Pattern</div><div class="cell cell-master">All</div>${Array.from({length:sc.weeks},(_,i)=>`<div class="cell cell-week">W${i+1}</div>`).join("")}<div class="cell cell-fee">Fee</div><div class="cell cell-actions"></div></div>`}function renderRoleRow(g,r){const cells=r.weeklyAllocs.map((a,i)=>`<div class="cell cell-week"><input class="small-input" type="number" min="0" max="100" step="1" value="${a}" title="Week ${i+1} allocation" oninput="setWeekAlloc('${g.id}','${r.id}',${i},this.value)"></div>`).join("");return`<div class="grid-row"><div class="cell cell-title"><input class="role-title" value="${escapeHtml(r.title)}" oninput="setRoleTitle('${g.id}','${r.id}',this.value)"></div><div class="cell cell-rate"><div class="rate-wrap"><span class="currency">$</span><input class="small-input rate-input" type="number" min="0" step="1" value="${Math.round(r.rate/1000)}" oninput="setRoleRate('${g.id}','${r.id}',this.value)"><span class="suffix">K/wk</span></div></div><div class="cell cell-pattern"><div class="pattern-buttons"><button class="mini-btn" type="button" onclick="applyPattern('${g.id}','${r.id}','flat')">Flat</button><button class="mini-btn" type="button" onclick="applyPattern('${g.id}','${r.id}','ramp')">Ramp</button><button class="mini-btn" type="button" onclick="applyPattern('${g.id}','${r.id}','taper')">Taper</button><button class="mini-btn" type="button" onclick="applyPattern('${g.id}','${r.id}','zero')">Clear</button></div></div><div class="cell cell-master"><input class="small-input" type="number" min="0" max="100" step="1" value="${masterValue(r)}" oninput="setMasterAlloc('${g.id}','${r.id}',this.value)"></div>${cells}<div class="cell cell-fee"><strong class="fee">${fmtUSD(calcRoleFee(r))}</strong></div><div class="cell cell-actions"><button class="icon-btn danger" type="button" title="Delete role" onclick="deleteRole('${g.id}','${r.id}')">x</button></div></div>`}
+function renderGroups(sc,c){const html=sc.groups.filter(g=>app.teamFilter==="all"||g.id===app.teamFilter).map(g=>{const roles=g.roles.filter(r=>matchesFilters(g,r));return`<article class="group-card"><div class="group-head"><div class="group-title-wrap"><h2 class="group-title">${escapeHtml(g.name)}</h2><span class="eyebrow">${roles.length} of ${g.roles.length} roles</span></div><div class="subtotal"><span class="eyebrow">Subtotal</span><strong class="value">${fmtUSD(c.teamSubs[g.id]||0)}</strong></div></div><div class="scroll-x">${renderHeaderRow(sc)}${roles.length?roles.map(r=>renderRoleRow(g,r)).join(""):'<div class="empty">No roles match this view.</div>'}</div><div class="group-foot"><button class="btn" type="button" onclick="addRole('${g.id}')">+ Add role</button><span class="eyebrow">${escapeHtml(g.name)}</span></div></article>`}).join("");$("groups").innerHTML=html||'<div class="group-card empty">No teams match this view.</div>'}
+function render(){const sc=activeScenario();if(!sc)return;const c=calcScenario(sc);renderTabs();renderControls();renderSummary(c);renderWeeklyChart(c);renderTeamMix(sc,c);renderCompareTable();renderGroups(sc,c);persist()}function scenarioSummaryText(){const sc=activeScenario(),c=calcScenario(sc),teams=sc.groups.map(g=>`${g.name}: ${fmtUSD(c.teamSubs[g.id]||0)}`).join("\n");return`${sc.name}\nWeeks: ${sc.weeks}\nFees before expenses: ${fmtUSD(c.fees)}\nExpenses: ${fmtUSD(c.expenses)}\nDiscount: ${fmtUSD(c.discount)}\nContingency: ${fmtUSD(c.contingency)}\nTotal: ${fmtUSD(c.total)}\nTarget variance: ${c.variance>=0?"+":""}${fmtUSD(c.variance)}\n\n${teams}`}function showToast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function copySummary(){const text=scenarioSummaryText();if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>showToast("Summary copied"));return}const temp=document.createElement("textarea");temp.value=text;document.body.appendChild(temp);temp.select();document.execCommand("copy");temp.remove();showToast("Summary copied")}function activeCsv(){const sc=activeScenario(),rows=[["Scenario","Team","Role","Rate","Week","AllocationPct","WeeklyFee"]];sc.groups.forEach(g=>g.roles.forEach(r=>r.weeklyAllocs.forEach((a,i)=>rows.push([sc.name,g.name,r.title,r.rate,i+1,a,r.rate*a/100]))));return rows.map(row=>row.map(cell=>`"${String(cell).replace(/"/g,'""')}"`).join(",")).join("\n")}function download(name,text,type){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}function exportJson(){download("pricing-plan.json",JSON.stringify(app,null,2),"application/json");showToast("Plan exported")}function exportCsv(){download("pricing-scenario.csv",activeCsv(),"text/csv");showToast("CSV exported")}function importJsonFile(file){const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data.scenarios)throw Error();Object.assign(app,data);render();showToast("Plan imported")}catch(e){showToast("Could not import plan")}};r.readAsText(file)}
+$("weeks-minus").addEventListener("click",()=>adjustWeeks(-1));$("weeks-plus").addEventListener("click",()=>adjustWeeks(1));$("weeks-input").addEventListener("change",e=>setWeeks(e.target.value));$("scenario-name").addEventListener("input",e=>setScenarioField("name",e.target.value));$("expense-input").addEventListener("input",e=>setScenarioField("expenseRate",e.target.value));$("discount-input").addEventListener("input",e=>setScenarioField("discountRate",e.target.value));$("contingency-input").addEventListener("input",e=>setScenarioField("contingencyRate",e.target.value));$("target-input").addEventListener("input",e=>setScenarioField("targetBudget",e.target.value));$("role-search").addEventListener("input",e=>{app.roleQuery=e.target.value;render()});$("team-filter").addEventListener("change",e=>{app.teamFilter=e.target.value;render()});$("hide-zero").addEventListener("change",e=>{app.hideZero=e.target.checked;render()});$("duplicate-scenario").addEventListener("click",duplicateScenario);$("new-scenario").addEventListener("click",newScenario);$("reset-active").addEventListener("click",resetActiveScenario);$("copy-summary").addEventListener("click",copySummary);$("export-json").addEventListener("click",exportJson);$("export-csv").addEventListener("click",exportCsv);$("import-json").addEventListener("click",()=>$("import-file").click());$("import-file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(f)importJsonFile(f);e.target.value=""});Object.assign(window,{selectScenario,removeScenario,setRoleTitle,setRoleRate,setMasterAlloc,setWeekAlloc,applyPattern,addRole,deleteRole});loadState();render();
+</script>
+</body>
+</html>
